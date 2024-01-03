@@ -1,0 +1,9 @@
+[submodule "buildroot"]
+	path = buildroot
+	url = https://github.com/fifteenhex/buildroot.git
+[submodule "u-boot"]
+	path = u-boot
+	url = https://github.com/fifteenhex/u-boot.git
+[submodule "linux"]
+	path = linux
+	url = https://github.com/fifteenhex/linux.git

@@ -1,0 +1,12 @@
+name: Build all things
+on: [push]
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: true
+      - run: make buildroot/output/images/rootfs.squashfs
+      - run: make u-boot/u-boot.elf.fudged
+      - run: make bootfiles/vmlinux

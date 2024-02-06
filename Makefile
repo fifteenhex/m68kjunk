@@ -19,7 +19,7 @@ bootfiles/vmlinux: bootfiles linux.stamp
 	PATH=$$PATH:$(PWD)/buildroot/output/host/bin/ \
 		$(MAKE) -C linux ARCH=m68k CROSS_COMPILE=$(COMPILER) -j12
 	cp linux/vmlinux $@
-	m68k-linux-gnu-strip $@
+	$(COMPILER)-strip $@
 
 buildroot.stamp:
 	$(MAKE) -C buildroot qemu_virt_mc68000_defconfig

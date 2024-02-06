@@ -7,3 +7,6 @@
 [submodule "linux"]
 	path = linux
 	url = https://github.com/fifteenhex/linux.git
+[submodule "qemu"]
+	path = qemu
+	url = git@github.com:fifteenhex/qemu.git

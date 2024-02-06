@@ -10,3 +10,4 @@ jobs:
       - run: make buildroot/output/images/rootfs.squashfs
       - run: make u-boot/u-boot.elf.fudged
       - run: make bootfiles/vmlinux
+      - run: make qemu/build/qemu-system-m68k

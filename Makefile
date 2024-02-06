@@ -65,12 +65,13 @@ tcgmmu/build/libtcgmmu.so:
 
 QEMU_CPU ?= m68000
 
-qemu-deps: u-boot/u-boot.elf.fudged \
+qemu-deps: qemu/build/qemu-system-m68k \
+	u-boot/u-boot.elf.fudged \
 	$(DISK) \
 	bootfiles/vmlinux \
 	buildroot/output/images/rootfs.squashfs
 
-QEMU_CMDLINE=qemu-system-m68k \
+QEMU_CMDLINE=qemu/build/qemu-system-m68k \
 	-cpu $(QEMU_CPU) \
 	-m 128 \
 	-M virt \
@@ -92,7 +93,14 @@ qemu-wait-for-gdb: qemu-deps tcgmmu/build/libtcgmmu.so
 	$(QEMU_CMDLINE) \
 	-S
 
-qemu: qemu-deps
+qemu.stamp:
+	mkdir -p qemu/build && cd qemu/build && ../configure --target-list=m68k-softmmu
+	touch $@
+
+qemu/build/qemu-system-m68k: qemu.stamp
+	cd qemu/build && make
+
+run-qemu-virt-68000: qemu-deps
 	$(QEMU_CMDLINE)
 #	-netdev user,id=net1 \
 #	-device virtio-net-device,netdev=net1 \

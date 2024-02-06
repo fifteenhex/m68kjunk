@@ -1,6 +1,7 @@
 .PHONY: u-boot/u-boot.elf bootfiles/vmlinux buildroot
 
-COMPILER=m68k-buildroot-uclinux-uclibc-
+TCPREFIX=m68k-buildroot-uclinux-uclibc
+COMPILER=$(TCPREFIX)-
 
 all: uboot
 
@@ -19,7 +20,7 @@ bootfiles/vmlinux: bootfiles linux.stamp
 	PATH=$$PATH:$(PWD)/buildroot/output/host/bin/ \
 		$(MAKE) -C linux ARCH=m68k CROSS_COMPILE=$(COMPILER) -j12
 	cp linux/vmlinux $@
-	$(COMPILER)-strip $@
+	$(TCPREFIX)-strip $@
 
 buildroot.stamp:
 	$(MAKE) -C buildroot qemu_virt_mc68000_defconfig
@@ -41,7 +42,7 @@ u-boot/u-boot.elf: u-boot.stamp
 
 u-boot/u-boot.elf.fudged: u-boot/u-boot.elf
 	PATH=$$PATH:$(PWD)/buildroot/output/host/bin/ \
-		m68k-buildroot-uclinux-uclibc-objcopy --change-start 0x400 $< $@
+		$(TCPREFIX)-objcopy --change-start 0x400 $< $@
 
 u-boot.brec: uboot
 	cat init.b > $@

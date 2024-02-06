@@ -40,7 +40,8 @@ u-boot/u-boot.elf: u-boot.stamp
 		$(MAKE) -C u-boot CROSS_COMPILE=$(COMPILER) -j12
 
 u-boot/u-boot.elf.fudged: u-boot/u-boot.elf
-	m68k-linux-gnu-objcopy --change-start 0x400 $< $@
+	PATH=$$PATH:$(PWD)/buildroot/output/host/bin/ \
+		m68k-buildroot-uclinux-uclibc-objcopy --change-start 0x400 $< $@
 
 u-boot.brec: uboot
 	cat init.b > $@

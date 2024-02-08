@@ -20,7 +20,8 @@ bootfiles/vmlinux: bootfiles linux.stamp
 	PATH=$$PATH:$(PWD)/buildroot/output/host/bin/ \
 		$(MAKE) -C linux ARCH=m68k CROSS_COMPILE=$(COMPILER) -j12
 	cp linux/vmlinux $@
-	$(TCPREFIX)-strip $@
+	PATH=$$PATH:$(PWD)/buildroot/output/host/bin/ \
+		$(TCPREFIX)-strip $@
 
 buildroot.stamp:
 	$(MAKE) -C buildroot qemu_virt_mc68000_defconfig
@@ -29,20 +30,31 @@ buildroot.stamp:
 buildroot/output/images/rootfs.squashfs: buildroot.stamp
 	$(MAKE) -C buildroot
 
-u-boot.stamp:
+u-boot.virt.stamp:
+	rm -f u-boot.*.stamp
 	$(MAKE) -C u-boot qemu_virt_m68k_mc68000_defconfig
+	touch $@
+
+u-boot.mc68ez328.stamp:
+	rm -f u-boot.*.stamp
+	$(MAKE) -C u-boot kanpapa_defconfig
 	touch $@
 
 u-boot-menuconfig:
 	$(MAKE) -C u-boot menuconfig
 
-u-boot/u-boot.elf: u-boot.stamp
+u-boot/u-boot.elf: u-boot.virt.stamp
 	PATH=$$PATH:$(PWD)/buildroot/output/host/bin/ \
 		$(MAKE) -C u-boot CROSS_COMPILE=$(COMPILER) -j12
 
 u-boot/u-boot.elf.fudged: u-boot/u-boot.elf
 	PATH=$$PATH:$(PWD)/buildroot/output/host/bin/ \
 		$(TCPREFIX)-objcopy --change-start 0x400 $< $@
+
+.PHONY: u-boot/u-boot.bin
+u-boot/u-boot.bin: u-boot.mc68ez328.stamp
+	PATH=$$PATH:$(PWD)/buildroot/output/host/bin/ \
+		$(MAKE) -C u-boot CROSS_COMPILE=$(COMPILER) -j12
 
 u-boot.brec: uboot
 	cat init.b > $@
@@ -51,8 +63,16 @@ u-boot.brec: uboot
 	echo "\n\n*** go! ***" >> $@
 	echo "0000100000" >> $@
 
-disk.qcow2:
+disk.qcow2: bootfiles/vmlinux
 	qemu-img create -f qcow2 $@ 1G
+	sudo modprobe nbd max_part=8
+	sudo qemu-nbd --connect=/dev/nbd0 disk.qcow2
+	sudo sfdisk /dev/nbd0 < sfdisk.txt
+	sudo mkfs.vfat /dev/nbd0p1
+	sudo mount /dev/nbd0p1 /mnt
+	sudo cp bootfiles/vmlinux /mnt
+	sudo umount /mnt
+	sudo qemu-nbd --disconnect /dev/nbd0
 
 DISK=disk.qcow2
 
@@ -98,6 +118,7 @@ qemu.stamp:
 	mkdir -p qemu/build && cd qemu/build && ../configure --target-list=m68k-softmmu
 	touch $@
 
+.PHONY:qemu/build/qemu-system-m68k
 qemu/build/qemu-system-m68k: qemu.stamp
 	cd qemu/build && make
 
@@ -108,3 +129,16 @@ run-qemu-virt-68000: qemu-deps
 #	-blockdev node-name=file0,driver=file,filename=$(DISK) \
 #	-blockdev node-name=disk0,driver=qcow2,file=file0 \
 #	-device	virtio-blk-device,drive=disk0 \
+
+run-qemu-mc68ez328: qemu/build/qemu-system-m68k u-boot/u-boot.bin
+	qemu/build/qemu-system-m68k \
+	-cpu $(QEMU_CPU) \
+	-m 8 \
+	-M mc68ez328 \
+	-bios u-boot/u-boot.bin \
+	-nographic \
+	-drive file=$(DISK),id=drive-sdcard,if=none \
+	-device sd-card-spi,drive=drive-sdcard \
+	-s
+
+

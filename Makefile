@@ -72,6 +72,7 @@ disk.qcow2: bootfiles/vmlinux
 	sudo mount /dev/nbd0p1 /mnt
 	sudo cp bootfiles/vmlinux /mnt
 	sudo umount /mnt
+	sudo dd if=buildroot/output/images/rootfs.squashfs of=/dev/nbd0p2
 	sudo qemu-nbd --disconnect /dev/nbd0
 
 DISK=disk.qcow2
@@ -130,7 +131,7 @@ run-qemu-virt-68000: qemu-deps
 #	-blockdev node-name=disk0,driver=qcow2,file=file0 \
 #	-device	virtio-blk-device,drive=disk0 \
 
-run-qemu-mc68ez328: qemu/build/qemu-system-m68k u-boot/u-boot.bin
+run-qemu-mc68ez328: qemu/build/qemu-system-m68k u-boot/u-boot.bin $(DISK)
 	qemu/build/qemu-system-m68k \
 	-cpu $(QEMU_CPU) \
 	-m 8 \

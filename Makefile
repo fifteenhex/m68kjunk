@@ -1,4 +1,4 @@
-.PHONY: u-boot/u-boot.elf bootfiles/vmlinux buildroot
+.PHONY: u-boot/u-boot.elf buildroot
 
 TCPREFIX=m68k-buildroot-uclinux-uclibc
 COMPILER=$(TCPREFIX)-
@@ -42,12 +42,16 @@ bootfiles/vmlinux.virt: bootfiles linux.virt.stamp
 
 LINUX_VIRT=bootfiles/vmlinux.virt
 
+.PHONY: bootfiles/vmlinux.mc68ez328
 bootfiles/vmlinux.mc68ez328: bootfiles linux.mc68ez328.stamp
 	PATH=$$PATH:$(PWD)/buildroot/output/host/bin/ \
 		$(MAKE) O=$(LINUX_BUILDDIR_MC68EZ328) -C linux ARCH=m68k CROSS_COMPILE=$(COMPILER) -j12
 	cp linux/$(LINUX_BUILDDIR_MC68EZ328)/vmlinux $@
 	PATH=$$PATH:$(PWD)/buildroot/output/host/bin/ \
 		$(TCPREFIX)-strip $@
+
+bootfiles/vmlinux.mc68ez328.lz4: bootfiles/vmlinux.mc68ez328
+	lz4 -f -9 $<
 
 # u-boot
 UBOOT_BUILDDIR_VIRT=build_virt
@@ -69,6 +73,7 @@ u-boot/$(UBOOT_BUILDDIR_VIRT)/u-boot.elf: u-boot.virt.stamp
 	PATH=$$PATH:$(PWD)/buildroot/output/host/bin/ \
 		$(MAKE) -C u-boot O=$(UBOOT_BUILDDIR_VIRT) CROSS_COMPILE=$(COMPILER) -j12
 
+.PHONY:u-boot/$(UBOOT_BUILDDIR_VIRT)/u-boot.elf.fudged
 u-boot/$(UBOOT_BUILDDIR_VIRT)/u-boot.elf.fudged: u-boot/$(UBOOT_BUILDDIR_VIRT)/u-boot.elf
 	PATH=$$PATH:$(PWD)/buildroot/output/host/bin/ \
 		$(TCPREFIX)-objcopy --change-start 0x400 $< $@
@@ -90,7 +95,9 @@ u-boot.brec: uboot
 
 # Disk image
 
-disk.qcow2: bootfiles/vmlinux.virt bootfiles/vmlinux.mc68ez328
+disk.qcow2: bootfiles/vmlinux.virt \
+	bootfiles/vmlinux.mc68ez328 \
+	bootfiles/vmlinux.mc68ez328.lz4
 	qemu-img create -f qcow2 $@ 1G
 	sudo modprobe nbd max_part=8
 	sudo qemu-nbd --connect=/dev/nbd0 disk.qcow2
@@ -98,7 +105,7 @@ disk.qcow2: bootfiles/vmlinux.virt bootfiles/vmlinux.mc68ez328
 	sudo mkfs.vfat /dev/nbd0p1
 	sudo mount /dev/nbd0p1 /mnt
 	sudo cp bootfiles/vmlinux.virt /mnt
-	sudo cp bootfiles/vmlinux.mc68ez328 /mnt
+	sudo cp bootfiles/vmlinux.mc68ez328* /mnt
 	sudo umount /mnt
 	sudo dd if=buildroot/output/images/rootfs.squashfs of=/dev/nbd0p2
 	sudo qemu-nbd --disconnect /dev/nbd0
@@ -172,5 +179,3 @@ run-qemu-mc68ez328: qemu/build/qemu-system-m68k $(UBOOT_MC68EZ328) $(DISK)
 	-drive file=$(DISK),id=drive-sdcard,if=none \
 	-device sd-card-spi,drive=drive-sdcard \
 	-s
-
-

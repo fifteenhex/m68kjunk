@@ -8,7 +8,7 @@ This is all the bits you need to play with recent linux on mc68000
 2. Open minicom, set your baud to 9600
 3. Open the transfer methods configuration and update ascii to `ascii-xfr -dsv -l 1`.
    This adds a delay between lines for the mc68ez328 bootloader to catch up.
-4. Open the file transfer menu and send the u-boot SPL `payload.b`
+4. Open the file transfer menu and send the u-boot SPL `payload.b` via ascii
 5. Send `0040000000` to jump to the SPL
 6. Wait for the SPL to boot and start printing CCC..
 7. Open the file transfer menu and send the u-boot binary `u-boot.img`

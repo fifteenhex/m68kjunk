@@ -21,3 +21,12 @@ This is all the bits you need to play with recent linux on mc68000
 11. Erase the first part of the flash and write u-boot there with 
     `erase 0x10000000 +0x48000; cp.l 0x100000 0x10000000 0x12000`
 12. You should now be able to reset and see u-boot load up from flash.
+
+## Booting linux on the kanpapa mc68ez328 board
+
+1. On an SD card you need:
+   - 2 or more partitions.
+   - The first should be FAT formatted.
+   - The second shouldn't be formatted.
+2. Put the kernel elf on the FAT partition
+3. dd the squashfs rootfs to the second partition.

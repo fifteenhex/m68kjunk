@@ -30,3 +30,13 @@ This is all the bits you need to play with recent linux on mc68000
    - The second shouldn't be formatted.
 2. Put the kernel elf on the FAT partition
 3. dd the squashfs rootfs to the second partition.
+
+
+## Wiring for an SD card on the kanpapa mc68ez328
+
+J4:
+  - 13 (SCLK) -> SD clk
+  - 15 (STXD) -> SD MOSI 
+  - 16 (SRXD) -> SD MISO
+  - 2  (PD0)  -> SD CS
+  - 1  (PD1)  -> SD vcc on (Optional but might be needed to get some cards to init)

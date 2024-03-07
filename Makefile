@@ -98,6 +98,8 @@ u-boot.brec: uboot
 disk.qcow2: bootfiles/vmlinux.virt \
 	bootfiles/vmlinux.mc68ez328 \
 	bootfiles/vmlinux.mc68ez328.lz4
+
+	rm -f %@
 	qemu-img create -f qcow2 $@ 1G
 	sudo modprobe nbd max_part=8
 	sudo qemu-nbd --connect=/dev/nbd0 disk.qcow2
@@ -109,6 +111,7 @@ disk.qcow2: bootfiles/vmlinux.virt \
 	sudo umount /mnt
 	sudo dd if=buildroot/output/images/rootfs.squashfs of=/dev/nbd0p2
 	sudo qemu-nbd --disconnect /dev/nbd0
+	sleep 4
 
 DISK=disk.qcow2
 
@@ -151,7 +154,7 @@ qemu-wait-for-gdb: qemu-deps tcgmmu/build/libtcgmmu.so
 	-S
 
 qemu.stamp:
-	mkdir -p qemu/build && cd qemu/build && ../configure --target-list=m68k-softmmu
+	mkdir -p qemu/build && cd qemu/build && ../configure --target-list=m68k-softmmu	--enable-sdl
 	touch $@
 
 .PHONY:qemu/build/qemu-system-m68k
@@ -175,7 +178,10 @@ run-qemu-mc68ez328: qemu/build/qemu-system-m68k $(UBOOT_MC68EZ328) $(DISK)
 	-m 8 \
 	-M mc68ez328 \
 	-bios $(UBOOT_MC68EZ328) \
-	-nographic \
+	--display sdl \
+	-serial mon:stdio \
 	-drive file=$(DISK),id=drive-sdcard,if=none \
 	-device sd-card-spi,drive=drive-sdcard \
 	-s
+
+#	-icount shift=2

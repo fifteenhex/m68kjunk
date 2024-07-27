@@ -37,17 +37,25 @@ buildroot/output/images/rootfs.squashfs: buildroot.stamp
 LINUX_BUILDDIR_VIRT=build_virt
 LINUX_BUILDDIR_MC68EZ328=build_mc68ez328
 
-linux.virt.stamp:
-	$(MAKE) -C linux O=$(LINUX_BUILDDIR_VIRT) ARCH=m68k virt_mc68000_defconfig
+# 1 - builddir
+# 2 - defconfig
+# 3 - stamp
+define create_linux_target
+linux.$3.stamp:
+	$(MAKE) -C linux O=$1 ARCH=m68k $2
 	touch $@
 
-linux.mc68ez328.stamp:
-	$(MAKE) -C linux O=$(LINUX_BUILDDIR_MC68EZ328) ARCH=m68k mc68ez328_defconfig
-	touch $@
+linux-$3-menuconfig:
+	PATH=$$$$PATH:$(PWD)/buildroot/output/host/bin/ \
+		$(MAKE) -C linux O=$1 ARCH=m68k CROSS_COMPILE=$(COMPILER) menuconfig
 
-linux-menuconfig:
-	PATH=$$PATH:$(PWD)/buildroot/output/host/bin/ \
-		$(MAKE) -C linux ARCH=m68k CROSS_COMPILE=$(COMPILER) menuconfig
+linux-$3-savedefconfig:
+	PATH=$$$$PATH:$(PWD)/buildroot/output/host/bin/ \
+		$(MAKE) -C linux O=$1 ARCH=m68k CROSS_COMPILE=$(COMPILER) savedefconfig
+endef
+
+$(eval $(call create_linux_target,$(LINUX_BUILDDIR_VIRT),virt_mc68000_defconfig,virt))
+$(eval $(call create_linux_target,$(LINUX_BUILDDIR_MC68EZ328),mc68ez328_defconfig,mc68ez328))
 
 bootfiles/vmlinux.virt: bootfiles linux.virt.stamp
 	PATH=$$PATH:$(PWD)/buildroot/output/host/bin/ \

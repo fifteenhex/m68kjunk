@@ -99,6 +99,8 @@ u-boot.$3.build.stamp: u-boot.$3.configured.stamp u-boot/$1/.config $(BUILDROOT_
 		$(MAKE) -C u-boot O=$1 -j12
 	touch $$@
 
+all-u-boot:: u-boot.$3.build.stamp
+
 .PHONY: u-boot-$3-menuconfig
 u-boot-$3-menuconfig:
 	PATH=$$$$PATH:$(PWD)/buildroot/output/host/bin/ \

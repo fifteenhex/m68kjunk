@@ -100,7 +100,7 @@ $(eval $(call create_uboot_target,$(UBOOT_BUILDDIR_E17),mvme147_defconfig,e17))
 $(eval $(call create_uboot_target,$(UBOOT_BUILDDIR_VIRT),qemu_virt_m68k_mc68000_defconfig,virt))
 $(eval $(call create_uboot_target,$(UBOOT_BUILDDIR_MC68EZ328),kanpapa_defconfig,mc68ez328))
 
-u-boot/$(UBOOT_BUILDDIR_VIRT)/u-boot.elf: u-boot.virt.stamp
+u-boot/$(UBOOT_BUILDDIR_VIRT)/u-boot.elf: u-boot.virt.build.stamp
 	PATH=$$PATH:$(PWD)/buildroot/output/host/bin/ \
 		$(MAKE) -C u-boot O=$(UBOOT_BUILDDIR_VIRT) CROSS_COMPILE=$(COMPILER) -j12
 

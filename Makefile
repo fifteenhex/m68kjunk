@@ -143,8 +143,10 @@ u-boot.brec: uboot
 	echo "\n\n*** go! ***" >> $@
 	echo "0000100000" >> $@
 
-# Disk image
+u-boot/$(UBOOT_BUILDDIR_MVME147)/spl/u-boot-spl.srec: u-boot/$(UBOOT_BUILDDIR_MVME147)/spl/u-boot-spl
+	objcopy -O srec $< $@
 
+# Disk image
 disk.qcow2: bootfiles/vmlinux.virt \
 	bootfiles/vmlinux.mc68ez328 \
 	bootfiles/vmlinux.mc68ez328.lz4
@@ -182,7 +184,24 @@ qemu-deps: qemu/build/qemu-system-m68k \
 	$(LINUX_VIRT) \
 	buildroot/output/images/rootfs.squashfs
 
-QEMU_CMDLINE=qemu/build/qemu-system-m68k \
+
+qemu-trace: qemu-deps tcgmmu/build/libtcgmmu.so
+	$(QEMU_CMDLINE) \
+	-D ./log.txt \
+	-plugin tcgmmu/build/libtcgmmu.so -d plugin
+
+qemu.stamp:
+	mkdir -p qemu/build && cd qemu/build && ../configure --target-list=m68k-softmmu	--enable-sdl
+	touch $@
+
+.PHONY:qemu/build/qemu-system-m68k
+qemu/build/qemu-system-m68k: qemu.stamp
+	cd qemu/build && make
+
+# run targets
+QEMU_BIN=qemu/build/qemu-system-m68k
+
+QEMU_CMDLINE_VIRT=$(QEMU_BIN) \
 	-cpu $(QEMU_CPU) \
 	-m 128 \
 	-M virt \
@@ -195,36 +214,11 @@ QEMU_CMDLINE=qemu/build/qemu-system-m68k \
 	-device virtio-serial-device \
 	-s
 
-qemu-trace: qemu-deps tcgmmu/build/libtcgmmu.so
-	$(QEMU_CMDLINE) \
-	-D ./log.txt \
-	-plugin tcgmmu/build/libtcgmmu.so -d plugin
-
-qemu-wait-for-gdb: qemu-deps tcgmmu/build/libtcgmmu.so
-	$(QEMU_CMDLINE) \
-	-S
-
-qemu.stamp:
-	mkdir -p qemu/build && cd qemu/build && ../configure --target-list=m68k-softmmu	--enable-sdl
-	touch $@
-
-.PHONY:qemu/build/qemu-system-m68k
-qemu/build/qemu-system-m68k: qemu.stamp
-	cd qemu/build && make
-
-# run targets
-
-run-qemu-virt-68000: qemu-deps
-	$(QEMU_CMDLINE)
-#	-netdev user,id=net1 \
-#	-device virtio-net-device,netdev=net1 \
-#	-blockdev node-name=file0,driver=file,filename=$(DISK) \
-#	-blockdev node-name=disk0,driver=qcow2,file=file0 \
-#	-device	virtio-blk-device,drive=disk0 \
-
 UBOOT_MC68EZ328=u-boot/$(UBOOT_BUILDDIR_MC68EZ328)/u-boot.bin
 run-qemu-mc68ez328: qemu/build/qemu-system-m68k $(UBOOT_MC68EZ328) $(DISK)
-	qemu/build/qemu-system-m68k \
+
+QEMU_CMDLINE_MC68EZ328= \
+	$(QEMU_BIN) \
 	-cpu $(QEMU_CPU) \
 	-m 8 \
 	-M mc68ez328 \
@@ -232,10 +226,22 @@ run-qemu-mc68ez328: qemu/build/qemu-system-m68k $(UBOOT_MC68EZ328) $(DISK)
 	--display sdl \
 	-serial mon:stdio \
 	-drive file=$(DISK),id=drive-sdcard,if=none \
-	-device sd-card-spi,drive=drive-sdcard \
-	-s
+	-device sd-card-spi,drive=drive-sdcard
 
 #	-icount shift=2
 
-u-boot/$(UBOOT_BUILDDIR_MVME147)/spl/u-boot-spl.srec: u-boot/$(UBOOT_BUILDDIR_MVME147)/spl/u-boot-spl
-	objcopy -O srec $< $@
+# - 1 name
+# - 2 name caps
+define create_qemu_target
+run-qemu-$1: qemu-deps
+	$(QEMU_CMDLINE_$(2))
+
+run-qemu-$1-gdb: qemu-deps
+	$(QEMU_CMDLINE_$(2)) -s
+
+run-qemu-$1-gdb-wait: qemu-deps
+	$(QEMU_CMDLINE_$(2)) -s -S
+endef
+
+$(eval $(call create_qemu_target,mc68ez328,MC68EZ328))
+$(eval $(call create_qemu_target,virt,VIRT))

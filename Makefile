@@ -1,3 +1,4 @@
+.SUFFIXES:
 .PHONY: u-boot/u-boot.elf buildroot
 
 TCPREFIX=m68k-buildroot-uclinux-uclibc
@@ -56,18 +57,42 @@ bootfiles/vmlinux.mc68ez328.lz4: bootfiles/vmlinux.mc68ez328
 # u-boot
 UBOOT_BUILDDIR_VIRT=build_virt
 UBOOT_BUILDDIR_MC68EZ328=build_mc68ez328
+UBOOT_BUILDDIR_MVME147=build_mvme147
+UBOOT_BUILDDIR_E17=build_e17
 
-# virt
-u-boot.virt.stamp:
-	$(MAKE) -C u-boot O=$(UBOOT_BUILDDIR_VIRT) qemu_virt_m68k_mc68000_defconfig
-	touch $@
+# 1 - builddir
+# 2 - defconfig
+# 3 - stamp
+define create_uboot_target
+u-boot.$3.configured.stamp:
+	PATH=$$$$PATH:$(PWD)/buildroot/output/host/bin/ \
+		CROSS_COMPILE=$(COMPILER) \
+		$(MAKE) -C u-boot O=$1 $2
+	touch $$@
 
-u-boot.mc68ez328.stamp:
-	$(MAKE) -C u-boot O=$(UBOOT_BUILDDIR_MC68EZ328) kanpapa_defconfig
-	touch $@
+u-boot.$3.build.stamp: u-boot.$3.configured.stamp u-boot/$1/.config
+	PATH=$$$$PATH:$(PWD)/buildroot/output/host/bin/ \
+		CROSS_COMPILE=$(COMPILER) \
+		$(MAKE) -C u-boot O=$1 -j12
+	touch $$@
 
-u-boot-menuconfig:
-	$(MAKE) -C u-boot menuconfig
+.PHONY: u-boot-$3-menuconfig
+u-boot-$3-menuconfig:
+	PATH=$$$$PATH:$(PWD)/buildroot/output/host/bin/ \
+	CROSS_COMPILE=$(COMPILER) \
+		$(MAKE) -C u-boot O=$1 menuconfig
+
+u-boot-$3-savedefconfig:
+	PATH=$$$$PATH:$(PWD)/buildroot/output/host/bin/ \
+	CROSS_COMPILE=$(COMPILER) \
+		$(MAKE) -C u-boot O=$1 savedefconfig
+
+endef
+
+$(eval $(call create_uboot_target,$(UBOOT_BUILDDIR_MVME147),mvme147_defconfig,mvme147))
+$(eval $(call create_uboot_target,$(UBOOT_BUILDDIR_E17),mvme147_defconfig,e17))
+$(eval $(call create_uboot_target,$(UBOOT_BUILDDIR_VIRT),qemu_virt_m68k_mc68000_defconfig,virt))
+$(eval $(call create_uboot_target,$(UBOOT_BUILDDIR_MC68EZ328),kanpapa_defconfig,mc68ez328))
 
 u-boot/$(UBOOT_BUILDDIR_VIRT)/u-boot.elf: u-boot.virt.stamp
 	PATH=$$PATH:$(PWD)/buildroot/output/host/bin/ \
@@ -185,3 +210,6 @@ run-qemu-mc68ez328: qemu/build/qemu-system-m68k $(UBOOT_MC68EZ328) $(DISK)
 	-s
 
 #	-icount shift=2
+
+u-boot/$(UBOOT_BUILDDIR_MVME147)/spl/u-boot-spl.srec: u-boot/$(UBOOT_BUILDDIR_MVME147)/spl/u-boot-spl
+	objcopy -O srec $< $@

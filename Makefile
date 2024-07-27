@@ -43,7 +43,7 @@ LINUX_BUILDDIR_MC68EZ328=build_mc68ez328
 define create_linux_target
 linux.$3.stamp:
 	$(MAKE) -C linux O=$1 ARCH=m68k $2
-	touch $@
+	touch $$@
 
 linux-$3-menuconfig:
 	PATH=$$$$PATH:$(PWD)/buildroot/output/host/bin/ \

@@ -6,6 +6,12 @@ COMPILER=$(TCPREFIX)-
 
 all: uboot
 
+installpkgs:
+	sudo apt install \
+		meson \
+		libglib2.0-dev \
+		libsdl2-dev
+
 # Directory for the "boot files" to go into
 bootfiles:
 	mkdir $@

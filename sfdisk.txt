@@ -1,0 +1,2 @@
+start=2048,size=262144,type=c
+start=264192,size=1832960,type=83

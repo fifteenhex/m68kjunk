@@ -7,7 +7,7 @@ jobs:
       - uses: actions/checkout@v4
         with:
           submodules: true
-      - run: sudo apt-get install git libglib2.0-dev libfdt-dev libpixman-1-dev zlib1g-dev ninja-build
+      - run: make installpkgs
       - run: make buildroot/output/images/rootfs.squashfs
       - run: make u-boot/build_virt/u-boot.elf.fudged
       - run: make u-boot/build_mc68ez328/u-boot.bin

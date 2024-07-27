@@ -10,7 +10,14 @@ installpkgs:
 	sudo apt install \
 		meson \
 		libglib2.0-dev \
-		libsdl2-dev
+		libsdl2-dev \
+		bison \
+		flex \
+		bc \
+		libssl-dev \
+		lz4 \
+		qemu-utils \
+		libncurses-dev
 
 # Directory for the "boot files" to go into
 bootfiles:
@@ -20,6 +27,8 @@ bootfiles:
 buildroot.stamp:
 	$(MAKE) -C buildroot qemu_virt_mc68000_defconfig
 	touch $@
+
+BUILDROOT_BUILT=buildroot/output/images/rootfs.squashfs
 
 buildroot/output/images/rootfs.squashfs: buildroot.stamp
 	$(MAKE) -C buildroot
@@ -70,13 +79,13 @@ UBOOT_BUILDDIR_E17=build_e17
 # 2 - defconfig
 # 3 - stamp
 define create_uboot_target
-u-boot.$3.configured.stamp:
+u-boot.$3.configured.stamp: $(BUILDROOT_BUILT)
 	PATH=$$$$PATH:$(PWD)/buildroot/output/host/bin/ \
 		CROSS_COMPILE=$(COMPILER) \
 		$(MAKE) -C u-boot O=$1 $2
 	touch $$@
 
-u-boot.$3.build.stamp: u-boot.$3.configured.stamp u-boot/$1/.config
+u-boot.$3.build.stamp: u-boot.$3.configured.stamp u-boot/$1/.config $(BUILDROOT_BUILT)
 	PATH=$$$$PATH:$(PWD)/buildroot/output/host/bin/ \
 		CROSS_COMPILE=$(COMPILER) \
 		$(MAKE) -C u-boot O=$1 -j12
@@ -113,7 +122,7 @@ UBOOT_VIRT=u-boot/$(UBOOT_BUILDDIR_VIRT)/u-boot.elf.fudged
 
 # mc68ez328
 .PHONY: u-boot/$(UBOOT_BUILDDIR_MC68EZ328)/u-boot.bin
-u-boot/$(UBOOT_BUILDDIR_MC68EZ328)/u-boot.bin: u-boot.mc68ez328.stamp
+u-boot/$(UBOOT_BUILDDIR_MC68EZ328)/u-boot.bin: u-boot.mc68ez328.build.stamp
 	PATH=$$PATH:$(PWD)/buildroot/output/host/bin/ \
 		$(MAKE) -C u-boot O=$(UBOOT_BUILDDIR_MC68EZ328) ARCH=m68k CROSS_COMPILE=$(COMPILER) -j12
 
@@ -134,6 +143,7 @@ disk.qcow2: bootfiles/vmlinux.virt \
 	qemu-img create -f qcow2 $@ 1G
 	sudo modprobe nbd max_part=8
 	sudo qemu-nbd --connect=/dev/nbd0 disk.qcow2
+	sleep 5
 	sudo sfdisk /dev/nbd0 < sfdisk.txt
 	sudo mkfs.vfat /dev/nbd0p1
 	sudo mount /dev/nbd0p1 /mnt

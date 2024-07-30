@@ -36,6 +36,7 @@ buildroot/output/images/rootfs.squashfs: buildroot.stamp
 # Linux
 LINUX_BUILDDIR_VIRT=build_virt
 LINUX_BUILDDIR_MC68EZ328=build_mc68ez328
+LINUX_BUILDDIR_MVME147=build_mvme147
 
 # 1 - builddir
 # 2 - defconfig
@@ -43,6 +44,10 @@ LINUX_BUILDDIR_MC68EZ328=build_mc68ez328
 define create_linux_target
 linux.$3.stamp:
 	$(MAKE) -C linux O=$1 ARCH=m68k $2
+	touch $$@
+
+linux.$3.build.stamp:
+	$(MAKE) -C linux O=$1 ARCH=m68k
 	touch $$@
 
 linux-$3-menuconfig:
@@ -56,6 +61,7 @@ endef
 
 $(eval $(call create_linux_target,$(LINUX_BUILDDIR_VIRT),virt_mc68000_defconfig,virt))
 $(eval $(call create_linux_target,$(LINUX_BUILDDIR_MC68EZ328),mc68ez328_defconfig,mc68ez328))
+$(eval $(call create_linux_target,$(LINUX_BUILDDIR_MVME147),mvme147_defconfig,mvme147))
 
 bootfiles/vmlinux.virt: bootfiles linux.virt.stamp
 	PATH=$$PATH:$(PWD)/buildroot/output/host/bin/ \
@@ -239,3 +245,19 @@ run-qemu-mc68ez328: qemu/build/qemu-system-m68k $(UBOOT_MC68EZ328) $(DISK)
 
 u-boot/$(UBOOT_BUILDDIR_MVME147)/spl/u-boot-spl.srec: u-boot/$(UBOOT_BUILDDIR_MVME147)/spl/u-boot-spl
 	objcopy -O srec $< $@
+
+QEMU_CMDLINE_MVME147=qemu/build/qemu-system-m68k \
+	-cpu $(QEMU_CPU) \
+	-M mvme147 \
+	-kernel $(UBOOT_VIRT) \
+	-nographic \
+	-s
+
+run-qemu-mvme147: qemu/build/qemu-system-m68k
+	$(QEMU_CMDLINE_MVME147)
+
+git-fetch-all:
+	git submodule foreach 'git fetch --all'
+
+mvme147-147bug.bin:
+	wget -o $@ "http://www.bitsavers.org/pdf/motorola/VME/MVME147/firmware/147/147bug2.5-combined.bin"

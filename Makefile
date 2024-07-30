@@ -236,11 +236,27 @@ QEMU_CMDLINE_MC68EZ328= \
 
 #	-icount shift=2
 
+u-boot/$(UBOOT_BUILDDIR_MVME147)/spl/u-boot-spl.srec: u-boot/$(UBOOT_BUILDDIR_MVME147)/spl/u-boot-spl
+	objcopy -O srec $< $@
+
+mvme147-147bug.bin:
+	wget -o $@ "http://www.bitsavers.org/pdf/motorola/VME/MVME147/firmware/147/147bug2.5-combined.bin"
+
+QEMU_CMDLINE_MVME147=qemu/build/qemu-system-m68k \
+	-cpu $(QEMU_CPU) \
+	-M mvme147 \
+	-bios mvme147-147bug.bin \
+	-nographic \
+	-s
+
 # - 1 name
 # - 2 name caps
 define create_qemu_target
 run-qemu-$1: qemu-deps
 	$(QEMU_CMDLINE_$(2))
+
+gdb-qemu-$1: qemu-deps
+	gdb --args $(QEMU_CMDLINE_$(2))
 
 run-qemu-$1-gdb: qemu-deps
 	$(QEMU_CMDLINE_$(2)) -s
@@ -251,22 +267,7 @@ endef
 
 $(eval $(call create_qemu_target,mc68ez328,MC68EZ328))
 $(eval $(call create_qemu_target,virt,VIRT))
-
-u-boot/$(UBOOT_BUILDDIR_MVME147)/spl/u-boot-spl.srec: u-boot/$(UBOOT_BUILDDIR_MVME147)/spl/u-boot-spl
-	objcopy -O srec $< $@
-
-QEMU_CMDLINE_MVME147=qemu/build/qemu-system-m68k \
-	-cpu $(QEMU_CPU) \
-	-M mvme147 \
-	-kernel $(UBOOT_VIRT) \
-	-nographic \
-	-s
-
-run-qemu-mvme147: qemu/build/qemu-system-m68k
-	$(QEMU_CMDLINE_MVME147)
-
-mvme147-147bug.bin:
-	wget -o $@ "http://www.bitsavers.org/pdf/motorola/VME/MVME147/firmware/147/147bug2.5-combined.bin"
+$(eval $(call create_qemu_target,mvme147,MVME147))
 
 help:
 	@echo "--- QEMU run targets"
@@ -274,4 +275,3 @@ help:
 
 git-fetch-all:
 	git submodule foreach 'git fetch --all'
-

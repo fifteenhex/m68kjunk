@@ -17,7 +17,8 @@ installpkgs:
 		libssl-dev \
 		lz4 \
 		qemu-utils \
-		libncurses-dev
+		libncurses-dev \
+		gdb-multiarch
 
 # Directory for the "boot files" to go into
 bootfiles:
@@ -211,8 +212,7 @@ QEMU_CMDLINE_VIRT=$(QEMU_BIN) \
 	-device virtio-blk-device,drive=drive-dummy \
 	-drive format=raw,file=buildroot/output/images/rootfs.squashfs,if=none,id=drive-rootfs \
 	-device virtio-blk-device,drive=drive-rootfs \
-	-device virtio-serial-device \
-	-s
+	-device virtio-serial-device
 
 UBOOT_MC68EZ328=u-boot/$(UBOOT_BUILDDIR_MC68EZ328)/u-boot.bin
 run-qemu-mc68ez328: qemu/build/qemu-system-m68k $(UBOOT_MC68EZ328) $(DISK)
@@ -245,3 +245,7 @@ endef
 
 $(eval $(call create_qemu_target,mc68ez328,MC68EZ328))
 $(eval $(call create_qemu_target,virt,VIRT))
+
+help:
+	@echo "--- QEMU run targets"
+	@echo "QEMU_CPU - CPU to use"

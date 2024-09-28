@@ -236,6 +236,9 @@ u-boot/$(UBOOT_BUILDDIR_MVME147)/spl/u-boot-spl.srec: u-boot/$(UBOOT_BUILDDIR_MV
 mvme147-147bug.bin:
 	wget -O $@ "http://www.bitsavers.org/pdf/motorola/VME/MVME147/firmware/147/147bug2.5-combined.bin"
 
+u-boot/$(UBOOT_BUILDDIR_E17)/spl/u-boot-spl.srec: u-boot/$(UBOOT_BUILDDIR_E17)/spl/u-boot-spl
+	objcopy -O srec $< $@
+
 #	-device loader,addr=0x400000,cpu-num=0 \
 
 #	-object filter-dump,id=user,netdev=lance,file=dump.dat
@@ -285,3 +288,27 @@ help:
 
 git-fetch-all:
 	git submodule foreach 'git fetch --all'
+
+mvme147-147bug.bin:
+	wget -o $@ "http://www.bitsavers.org/pdf/motorola/VME/MVME147/firmware/147/147bug2.5-combined.bin"
+
+.PHONY:
+mvme147_roms:
+	./romwak/romwak /p u-boot/build_mvme147/spl/u-boot-spl.bin u-boot-spl.bin.padded 64 0xff
+	cat u-boot-spl.bin.padded > u-boot-spl.padded.fill
+	cat u-boot-spl.bin.padded >> u-boot-spl.padded.fill
+	cat u-boot-spl.bin.padded >> u-boot-spl.padded.fill
+	cat u-boot-spl.bin.padded >> u-boot-spl.padded.fill
+	cat u-boot-spl.bin.padded >> u-boot-spl.padded.fill
+	cat u-boot-spl.bin.padded >> u-boot-spl.padded.fill
+	cat u-boot-spl.bin.padded >> u-boot-spl.padded.fill
+	cat u-boot-spl.bin.padded >> u-boot-spl.padded.fill
+	cat u-boot-spl.bin.padded >> u-boot-spl.padded.fill
+	cat u-boot-spl.bin.padded >> u-boot-spl.padded.fill
+	cat u-boot-spl.bin.padded >> u-boot-spl.padded.fill
+	cat u-boot-spl.bin.padded >> u-boot-spl.padded.fill
+	cat u-boot-spl.bin.padded >> u-boot-spl.padded.fill
+	cat u-boot-spl.bin.padded >> u-boot-spl.padded.fill
+	cat u-boot-spl.bin.padded >> u-boot-spl.padded.fill
+	cat u-boot-spl.bin.padded >> u-boot-spl.padded.fill
+	./romwak/romwak /b u-boot-spl.padded.fill u-boot-spl.even.bin u-boot-spl.odd.bin

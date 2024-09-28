@@ -10,3 +10,6 @@
 [submodule "qemu"]
 	path = qemu
 	url = git@github.com:fifteenhex/qemu.git
+[submodule "tcgmmu"]
+	path = tcgmmu
+	url = git@github.com:fifteenhex/tcgmmu.git

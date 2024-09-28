@@ -191,14 +191,8 @@ qemu-deps: qemu/build/qemu-system-m68k \
 	$(LINUX_VIRT) \
 	buildroot/output/images/rootfs.squashfs
 
-
-qemu-trace: qemu-deps tcgmmu/build/libtcgmmu.so
-	$(QEMU_CMDLINE) \
-	-D ./log.txt \
-	-plugin tcgmmu/build/libtcgmmu.so -d plugin
-
 qemu.stamp:
-	mkdir -p qemu/build && cd qemu/build && ../configure --target-list=m68k-softmmu	--enable-sdl
+	mkdir -p qemu/build && cd qemu/build && ../configure --target-list=m68k-softmmu	--enable-sdl --enable-slirp
 	touch $@
 
 .PHONY:qemu/build/qemu-system-m68k
@@ -240,14 +234,26 @@ u-boot/$(UBOOT_BUILDDIR_MVME147)/spl/u-boot-spl.srec: u-boot/$(UBOOT_BUILDDIR_MV
 	objcopy -O srec $< $@
 
 mvme147-147bug.bin:
-	wget -o $@ "http://www.bitsavers.org/pdf/motorola/VME/MVME147/firmware/147/147bug2.5-combined.bin"
+	wget -O $@ "http://www.bitsavers.org/pdf/motorola/VME/MVME147/firmware/147/147bug2.5-combined.bin"
+
+#	-device loader,addr=0x400000,cpu-num=0 \
+
+#	-object filter-dump,id=user,netdev=lance,file=dump.dat
+#	-netdev user,id=n1 \
+#	-nic user
+
+QEMU_CMDLINE_COMMON=-nic user,tftp=bootfiles/
 
 QEMU_CMDLINE_MVME147=qemu/build/qemu-system-m68k \
-	-cpu $(QEMU_CPU) \
 	-M mvme147 \
 	-bios mvme147-147bug.bin \
+	-device loader,file=u-boot/build_mvme147/spl/u-boot-spl.bin,addr=0x400000 \
+	-device loader,file=u-boot/build_mvme147/u-boot.img,addr=0x700000 \
 	-nographic \
-	-s
+	-serial unix:/tmp/mvme147,server \
+	-drive format=raw,file=buildroot/output/images/rootfs.squashfs,if=none,id=drive-rootfs \
+	-device scsi-hd,drive=drive-rootfs,bus=scsi.0,channel=0,scsi-id=1,lun=5 \
+	$(QEMU_CMDLINE_COMMON)
 
 # - 1 name
 # - 2 name caps
@@ -263,6 +269,10 @@ run-qemu-$1-gdb: qemu-deps
 
 run-qemu-$1-gdb-wait: qemu-deps
 	$(QEMU_CMDLINE_$(2)) -s -S
+
+qemu-trace-$1: qemu-deps tcgmmu/build/libtcgmmu.so
+	$(QEMU_CMDLINE_$(2)) -D ./log.txt \
+	-plugin tcgmmu/build/libtcgmmu.so -s -S
 endef
 
 $(eval $(call create_qemu_target,mc68ez328,MC68EZ328))

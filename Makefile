@@ -17,7 +17,8 @@ installpkgs:
 		libssl-dev \
 		lz4 \
 		qemu-utils \
-		libncurses-dev
+		libncurses-dev \
+		gdb-multiarch
 
 # Directory for the "boot files" to go into
 bootfiles:
@@ -150,7 +151,6 @@ u-boot.brec: uboot
 	echo "0000100000" >> $@
 
 # Disk image
-
 disk.qcow2: bootfiles/vmlinux.virt \
 	bootfiles/vmlinux.mc68ez328 \
 	bootfiles/vmlinux.mc68ez328.lz4
@@ -180,108 +180,16 @@ DISK=disk.qcow2
 tcgmmu/build/libtcgmmu.so:
 	cd tcgmmu/build/ && meson compile
 
-QEMU_CPU ?= m68000
 
-qemu-deps: qemu/build/qemu-system-m68k \
-	$(UBOOT_VIRT) \
-	$(DISK) \
-	$(LINUX_VIRT) \
-	buildroot/output/images/rootfs.squashfs
+include qemu.mk
+include mvme147.mk
+include e17.mk
+include virt.mk
+include mc68ez328.mk
 
-QEMU_CMDLINE=qemu/build/qemu-system-m68k \
-	-cpu $(QEMU_CPU) \
-	-m 128 \
-	-M virt \
-	-kernel $(UBOOT_VIRT) \
-	-nographic \
-	-drive file=fat:./bootfiles/,if=none,id=drive-dummy,readonly=on \
-	-device virtio-blk-device,drive=drive-dummy \
-	-drive format=raw,file=buildroot/output/images/rootfs.squashfs,if=none,id=drive-rootfs \
-	-device virtio-blk-device,drive=drive-rootfs \
-	-device virtio-serial-device \
-	-s
-
-qemu-trace: qemu-deps tcgmmu/build/libtcgmmu.so
-	$(QEMU_CMDLINE) \
-	-D ./log.txt \
-	-plugin tcgmmu/build/libtcgmmu.so -d plugin
-
-qemu-wait-for-gdb: qemu-deps tcgmmu/build/libtcgmmu.so
-	$(QEMU_CMDLINE) \
-	-S
-
-qemu.stamp:
-	mkdir -p qemu/build && cd qemu/build && ../configure --target-list=m68k-softmmu	--enable-sdl
-	touch $@
-
-.PHONY:qemu/build/qemu-system-m68k
-qemu/build/qemu-system-m68k: qemu.stamp
-	cd qemu/build && make
-
-# run targets
-
-run-qemu-virt-68000: qemu-deps
-	$(QEMU_CMDLINE)
-#	-netdev user,id=net1 \
-#	-device virtio-net-device,netdev=net1 \
-#	-blockdev node-name=file0,driver=file,filename=$(DISK) \
-#	-blockdev node-name=disk0,driver=qcow2,file=file0 \
-#	-device	virtio-blk-device,drive=disk0 \
-
-UBOOT_MC68EZ328=u-boot/$(UBOOT_BUILDDIR_MC68EZ328)/u-boot.bin
-run-qemu-mc68ez328: qemu/build/qemu-system-m68k $(UBOOT_MC68EZ328) $(DISK)
-	qemu/build/qemu-system-m68k \
-	-cpu $(QEMU_CPU) \
-	-m 8 \
-	-M mc68ez328 \
-	-bios $(UBOOT_MC68EZ328) \
-	--display sdl \
-	-serial mon:stdio \
-	-drive file=$(DISK),id=drive-sdcard,if=none \
-	-device sd-card-spi,drive=drive-sdcard \
-	-s
-
-#	-icount shift=2
-
-u-boot/$(UBOOT_BUILDDIR_MVME147)/spl/u-boot-spl.srec: u-boot/$(UBOOT_BUILDDIR_MVME147)/spl/u-boot-spl
-	objcopy -O srec $< $@
-
-u-boot/$(UBOOT_BUILDDIR_E17)/spl/u-boot-spl.srec: u-boot/$(UBOOT_BUILDDIR_E17)/spl/u-boot-spl
-	objcopy -O srec $< $@
-
-QEMU_CMDLINE_MVME147=qemu/build/qemu-system-m68k \
-	-cpu $(QEMU_CPU) \
-	-M mvme147 \
-	-kernel $(UBOOT_VIRT) \
-	-nographic \
-	-s
-
-run-qemu-mvme147: qemu/build/qemu-system-m68k
-	$(QEMU_CMDLINE_MVME147)
+help:
+	@echo "--- QEMU run targets"
+	@echo "QEMU_CPU - CPU to use"
 
 git-fetch-all:
 	git submodule foreach 'git fetch --all'
-
-mvme147-147bug.bin:
-	wget -o $@ "http://www.bitsavers.org/pdf/motorola/VME/MVME147/firmware/147/147bug2.5-combined.bin"
-
-.PHONY:
-mvme147_roms:
-	./romwak/romwak /p u-boot/build_mvme147/spl/u-boot-spl.bin u-boot-spl.bin.padded 64 0xff
-	cat u-boot-spl.bin.padded > u-boot-spl.padded.fill
-	cat u-boot-spl.bin.padded >> u-boot-spl.padded.fill
-	cat u-boot-spl.bin.padded >> u-boot-spl.padded.fill
-	cat u-boot-spl.bin.padded >> u-boot-spl.padded.fill
-	cat u-boot-spl.bin.padded >> u-boot-spl.padded.fill
-	cat u-boot-spl.bin.padded >> u-boot-spl.padded.fill
-	cat u-boot-spl.bin.padded >> u-boot-spl.padded.fill
-	cat u-boot-spl.bin.padded >> u-boot-spl.padded.fill
-	cat u-boot-spl.bin.padded >> u-boot-spl.padded.fill
-	cat u-boot-spl.bin.padded >> u-boot-spl.padded.fill
-	cat u-boot-spl.bin.padded >> u-boot-spl.padded.fill
-	cat u-boot-spl.bin.padded >> u-boot-spl.padded.fill
-	cat u-boot-spl.bin.padded >> u-boot-spl.padded.fill
-	cat u-boot-spl.bin.padded >> u-boot-spl.padded.fill
-	cat u-boot-spl.bin.padded >> u-boot-spl.padded.fill
-	cat u-boot-spl.bin.padded >> u-boot-spl.padded.fill
-	./romwak/romwak /b u-boot-spl.padded.fill u-boot-spl.even.bin u-boot-spl.odd.bin

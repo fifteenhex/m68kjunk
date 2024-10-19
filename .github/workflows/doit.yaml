@@ -8,9 +8,3 @@ jobs:
         with:
           submodules: true
       - run: make installpkgs
-      - run: make buildroot/output/images/rootfs.squashfs
-      - run: make u-boot/build_virt/u-boot.elf.fudged
-      - run: make u-boot/build_mc68ez328/u-boot.bin
-      - run: make bootfiles/vmlinux.virt
-      - run: make bootfiles/vmlinux.mc68ez328
-      - run: make qemu/build/qemu-system-m68k

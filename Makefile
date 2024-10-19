@@ -24,15 +24,7 @@ installpkgs:
 bootfiles:
 	mkdir $@
 
-# Buildroot
-buildroot.stamp:
-	$(MAKE) -C buildroot qemu_virt_mc68000_defconfig
-	touch $@
-
-BUILDROOT_BUILT=buildroot/output/images/rootfs.squashfs
-
-buildroot/output/images/rootfs.squashfs: buildroot.stamp
-	$(MAKE) -C buildroot
+include mk/buildroot.mk
 
 # Linux
 LINUX_BUILDDIR_VIRT=build_virt
@@ -90,36 +82,7 @@ UBOOT_BUILDDIR_MC68EZ328=build_mc68ez328
 UBOOT_BUILDDIR_MVME147=build_mvme147
 UBOOT_BUILDDIR_E17=build_e17
 
-# 1 - builddir
-# 2 - defconfig
-# 3 - stamp
-define create_uboot_target
-u-boot.$3.configured.stamp: $(BUILDROOT_BUILT)
-	PATH=$$$$PATH:$(PWD)/buildroot/output/host/bin/ \
-		CROSS_COMPILE=$(COMPILER) \
-		$(MAKE) -C u-boot O=$1 $2
-	touch $$@
-
-u-boot.$3.build.stamp: u-boot.$3.configured.stamp u-boot/$1/.config $(BUILDROOT_BUILT)
-	PATH=$$$$PATH:$(PWD)/buildroot/output/host/bin/ \
-		CROSS_COMPILE=$(COMPILER) \
-		$(MAKE) -C u-boot O=$1 -j12
-	touch $$@
-
-all-u-boot:: u-boot.$3.build.stamp
-
-.PHONY: u-boot-$3-menuconfig
-u-boot-$3-menuconfig:
-	PATH=$$$$PATH:$(PWD)/buildroot/output/host/bin/ \
-	CROSS_COMPILE=$(COMPILER) \
-		$(MAKE) -C u-boot O=$1 menuconfig
-
-u-boot-$3-savedefconfig:
-	PATH=$$$$PATH:$(PWD)/buildroot/output/host/bin/ \
-	CROSS_COMPILE=$(COMPILER) \
-		$(MAKE) -C u-boot O=$1 savedefconfig
-
-endef
+include mk/uboot.mk
 
 $(eval $(call create_uboot_target,$(UBOOT_BUILDDIR_MVME147),mvme147_defconfig,mvme147))
 $(eval $(call create_uboot_target,$(UBOOT_BUILDDIR_E17),mvme147_defconfig,e17))
@@ -181,11 +144,11 @@ tcgmmu/build/libtcgmmu.so:
 	cd tcgmmu/build/ && meson compile
 
 
-include qemu.mk
-include mvme147.mk
-include e17.mk
-include virt.mk
-include mc68ez328.mk
+include mk/qemu.mk
+include mk/mvme147.mk
+include mk/e17.mk
+include mk/virt.mk
+include mk/mc68ez328.mk
 
 help:
 	@echo "--- QEMU run targets"

@@ -1,8 +1,7 @@
 .SUFFIXES:
 .PHONY: u-boot/u-boot.elf buildroot
 
-TCPREFIX=m68k-buildroot-uclinux-uclibc
-COMPILER=$(TCPREFIX)-
+include mk/toolchain.mk
 
 all: uboot
 
@@ -25,56 +24,7 @@ bootfiles:
 	mkdir $@
 
 include mk/buildroot.mk
-
-# Linux
-LINUX_BUILDDIR_VIRT=build_virt
-LINUX_BUILDDIR_MC68EZ328=build_mc68ez328
-LINUX_BUILDDIR_MVME147=build_mvme147
-
-# 1 - builddir
-# 2 - defconfig
-# 3 - stamp
-define create_linux_target
-linux.$3.stamp:
-	$(MAKE) -C linux O=$1 ARCH=m68k $2
-	touch $$@
-
-linux.$3.build.stamp:
-	$(MAKE) -C linux O=$1 ARCH=m68k
-	touch $$@
-
-linux-$3-menuconfig:
-	PATH=$$$$PATH:$(PWD)/buildroot/output/host/bin/ \
-		$(MAKE) -C linux O=$1 ARCH=m68k CROSS_COMPILE=$(COMPILER) menuconfig
-
-linux-$3-savedefconfig:
-	PATH=$$$$PATH:$(PWD)/buildroot/output/host/bin/ \
-		$(MAKE) -C linux O=$1 ARCH=m68k CROSS_COMPILE=$(COMPILER) savedefconfig
-endef
-
-$(eval $(call create_linux_target,$(LINUX_BUILDDIR_VIRT),virt_mc68000_defconfig,virt))
-$(eval $(call create_linux_target,$(LINUX_BUILDDIR_MC68EZ328),mc68ez328_defconfig,mc68ez328))
-$(eval $(call create_linux_target,$(LINUX_BUILDDIR_MVME147),mvme147_defconfig,mvme147))
-
-bootfiles/vmlinux.virt: bootfiles linux.virt.stamp
-	PATH=$$PATH:$(PWD)/buildroot/output/host/bin/ \
-		$(MAKE) -C linux O=$(LINUX_BUILDDIR_VIRT) ARCH=m68k CROSS_COMPILE=$(COMPILER) -j12
-	cp linux/$(LINUX_BUILDDIR_VIRT)/vmlinux $@
-	PATH=$$PATH:$(PWD)/buildroot/output/host/bin/ \
-		$(TCPREFIX)-strip $@
-
-LINUX_VIRT=bootfiles/vmlinux.virt
-
-.PHONY: bootfiles/vmlinux.mc68ez328
-bootfiles/vmlinux.mc68ez328: bootfiles linux.mc68ez328.stamp
-	PATH=$$PATH:$(PWD)/buildroot/output/host/bin/ \
-		$(MAKE) O=$(LINUX_BUILDDIR_MC68EZ328) -C linux ARCH=m68k CROSS_COMPILE=$(COMPILER) -j12
-	cp linux/$(LINUX_BUILDDIR_MC68EZ328)/vmlinux $@
-	PATH=$$PATH:$(PWD)/buildroot/output/host/bin/ \
-		$(TCPREFIX)-strip $@
-
-bootfiles/vmlinux.mc68ez328.lz4: bootfiles/vmlinux.mc68ez328
-	lz4 -f -9 $<
+include mk/linux.mk
 
 # u-boot
 UBOOT_BUILDDIR_VIRT=build_virt
@@ -84,8 +34,6 @@ UBOOT_BUILDDIR_E17=build_e17
 
 include mk/uboot.mk
 
-$(eval $(call create_uboot_target,$(UBOOT_BUILDDIR_MVME147),mvme147_defconfig,mvme147))
-$(eval $(call create_uboot_target,$(UBOOT_BUILDDIR_E17),mvme147_defconfig,e17))
 $(eval $(call create_uboot_target,$(UBOOT_BUILDDIR_VIRT),qemu_virt_m68k_mc68000_defconfig,virt))
 $(eval $(call create_uboot_target,$(UBOOT_BUILDDIR_MC68EZ328),kanpapa_defconfig,mc68ez328))
 

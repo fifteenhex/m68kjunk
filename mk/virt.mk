@@ -1,3 +1,5 @@
+LINUX_BUILDDIR_VIRT=build/linux_virt
+
 QEMU_CMDLINE_VIRT=$(QEMU_BIN) \
 	-cpu $(QEMU_CPU) \
 	-m 128 \
@@ -10,4 +12,14 @@ QEMU_CMDLINE_VIRT=$(QEMU_BIN) \
 	-device virtio-blk-device,drive=drive-rootfs \
 	-device virtio-serial-device
 
+$(eval $(call create_linux_target,$(LINUX_BUILDDIR_VIRT),virt_mc68000_defconfig,virt))
 $(eval $(call create_qemu_target,virt,VIRT))
+
+bootfiles/vmlinux.virt: bootfiles linux.virt.stamp
+	PATH=$$PATH:$(PWD)/buildroot/output/host/bin/ \
+		$(MAKE) -C linux O=../$(LINUX_BUILDDIR_VIRT) ARCH=m68k CROSS_COMPILE=$(COMPILER) -j12
+	cp $(LINUX_BUILDDIR_VIRT)/vmlinux $@
+	PATH=$$PATH:$(PWD)/buildroot/output/host/bin/ \
+		$(TCPREFIX)-strip $@
+
+LINUX_VIRT=bootfiles/vmlinux.virt

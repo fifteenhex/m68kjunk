@@ -1,3 +1,4 @@
+LINUX_BUILDDIR_MVME147=build/linux_mvme147
 QEMU_CMDLINE_MVME147=qemu/build/qemu-system-m68k \
 	-M mvme147 \
 	-bios mvme147-147bug.bin \
@@ -36,4 +37,5 @@ mvme147_roms:
 	cat u-boot-spl.bin.padded >> u-boot-spl.padded.fill
 	./romwak/romwak /b u-boot-spl.padded.fill u-boot-spl.even.bin u-boot-spl.odd.bin
 
+$(eval $(call create_uboot_target,$(UBOOT_BUILDDIR_MVME147),mvme147_defconfig,mvme147))
 $(eval $(call create_qemu_target,mvme147,MVME147))

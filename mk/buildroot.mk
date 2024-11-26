@@ -1,5 +1,4 @@
 # Buildroot
-BUILDROOT_BUILT=buildroot/output/images/rootfs.squashfs
 BUILDROOT_000_DIR=build/buildroot_000
 BUILDROOT_000_DEFCONFIG=qemu_virt_mc68000_defconfig
 BUILDROOT_030_DIR=build/buildroot_030

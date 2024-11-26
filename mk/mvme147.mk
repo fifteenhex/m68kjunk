@@ -1,3 +1,4 @@
+UBOOT_BUILDDIR_MVME147=build_mvme147
 LINUX_BUILDDIR_MVME147=build/linux_mvme147
 QEMU_CMDLINE_MVME147=qemu/build/qemu-system-m68k \
 	-M mvme147 \

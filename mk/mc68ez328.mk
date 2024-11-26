@@ -1,6 +1,7 @@
 LINUX_BUILDDIR_MC68EZ328=build/linux_mc68ez328
 UBOOT_MC68EZ328=u-boot/$(UBOOT_BUILDDIR_MC68EZ328)/u-boot.bin
 run-qemu-mc68ez328: qemu/build/qemu-system-m68k $(UBOOT_MC68EZ328) $(DISK)
+UBOOT_BUILDDIR_MC68EZ328=build_mc68ez328
 
 QEMU_CMDLINE_MC68EZ328= \
 	$(QEMU_BIN) \
@@ -21,7 +22,8 @@ QEMU_CMDLINE_MC68EZ328= \
 #	-netdev user,id=n1 \
 #	-nic user
 
-$(eval $(call create_linux_target,$(LINUX_BUILDDIR_MC68EZ328),mc68ez328_defconfig,mc68ez328))
+$(eval $(call create_uboot_target,$(UBOOT_BUILDDIR_MC68EZ328),kanpapa_defconfig,mc68ez328,000))
+$(eval $(call create_linux_target,$(LINUX_BUILDDIR_MC68EZ328),mc68ez328_defconfig,mc68ez328,000))
 $(eval $(call create_qemu_target,mc68ez328,MC68EZ328))
 
 .PHONY: bootfiles/vmlinux.mc68ez328

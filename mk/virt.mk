@@ -1,3 +1,4 @@
+UBOOT_BUILDDIR_VIRT=build/uboot_virt
 LINUX_BUILDDIR_VIRT=build/linux_virt
 
 QEMU_CMDLINE_VIRT=$(QEMU_BIN) \
@@ -12,7 +13,8 @@ QEMU_CMDLINE_VIRT=$(QEMU_BIN) \
 	-device virtio-blk-device,drive=drive-rootfs \
 	-device virtio-serial-device
 
-$(eval $(call create_linux_target,$(LINUX_BUILDDIR_VIRT),virt_mc68000_defconfig,virt))
+$(eval $(call create_uboot_target,$(UBOOT_BUILDDIR_VIRT),qemu_virt_m68k_mc68000_defconfig,virt,000))
+$(eval $(call create_linux_target,$(LINUX_BUILDDIR_VIRT),virt_mc68000_defconfig,virt,000))
 $(eval $(call create_qemu_target,virt,VIRT))
 
 bootfiles/vmlinux.virt: bootfiles linux.virt.stamp

@@ -24,18 +24,9 @@ bootfiles:
 	mkdir $@
 
 include mk/buildroot.mk
+include mk/uboot.mk
 include mk/linux.mk
 
-# u-boot
-UBOOT_BUILDDIR_VIRT=build_virt
-UBOOT_BUILDDIR_MC68EZ328=build_mc68ez328
-UBOOT_BUILDDIR_MVME147=build_mvme147
-UBOOT_BUILDDIR_E17=build_e17
-
-include mk/uboot.mk
-
-$(eval $(call create_uboot_target,$(UBOOT_BUILDDIR_VIRT),qemu_virt_m68k_mc68000_defconfig,virt))
-$(eval $(call create_uboot_target,$(UBOOT_BUILDDIR_MC68EZ328),kanpapa_defconfig,mc68ez328))
 
 u-boot/$(UBOOT_BUILDDIR_VIRT)/u-boot.elf: u-boot.virt.build.stamp
 	PATH=$$PATH:$(PWD)/buildroot/output/host/bin/ \

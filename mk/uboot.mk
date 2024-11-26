@@ -1,30 +1,29 @@
 # 1 - builddir
 # 2 - defconfig
 # 3 - stamp
+# 4 - buildroot name
+
+UBOOT_MAKE=$(MAKE) -C u-boot O=../$1 CROSS_COMPILE=../buildroot_$4/host/bin/m68k-buildroot-uclinux-uclibc-
+UBOOT_CONFIG=$1/.config
+UBOOT_STAMP_CONFIGURED=build/u-boot.$3.configured.stamp
+UBOOT_STAMP_BUILD=build/u-boot.$3.build.stamp
+
 define create_uboot_target
-u-boot.$3.configured.stamp: $(BUILDROOT_BUILT)
-	PATH=$$$$PATH:$(PWD)/buildroot/output/host/bin/ \
-		CROSS_COMPILE=$(COMPILER) \
-		$(MAKE) -C u-boot O=$1 $2
+$(UBOOT_STAMP_CONFIGURED): $(BUILDROOT_BUILT)
+	$(UBOOT_MAKE) $2
 	touch $$@
 
-u-boot.$3.build.stamp: u-boot.$3.configured.stamp u-boot/$1/.config $(BUILDROOT_BUILT)
-	PATH=$$$$PATH:$(PWD)/buildroot/output/host/bin/ \
-		CROSS_COMPILE=$(COMPILER) \
-		$(MAKE) -C u-boot O=$1 -j12
+$(UBOOT_STAMP_BUILD): $(UBOOT_STAMP_CONFIGURED) $(UBOOT_CONFIG) $(BUILDROOT_BUILT)
+	$(UBOOT_MAKE) -j12
 	touch $$@
 
-all-u-boot:: u-boot.$3.build.stamp
+all-u-boot:: $(UBOOT_STAMP_BUILD)
 
 .PHONY: u-boot-$3-menuconfig
 u-boot-$3-menuconfig:
-	PATH=$$$$PATH:$(PWD)/buildroot/output/host/bin/ \
-	CROSS_COMPILE=$(COMPILER) \
-		$(MAKE) -C u-boot O=$1 menuconfig
+	$(UBOOT_MAKE) menuconfig
 
 u-boot-$3-savedefconfig:
-	PATH=$$$$PATH:$(PWD)/buildroot/output/host/bin/ \
-	CROSS_COMPILE=$(COMPILER) \
-		$(MAKE) -C u-boot O=$1 savedefconfig
+	$(UBOOT_MAKE) savedefconfig
 
 endef

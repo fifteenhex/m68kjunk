@@ -21,7 +21,7 @@ QEMU_CMDLINE_MC68EZ328= \
 #	-netdev user,id=n1 \
 #	-nic user
 
-$(eval $(call create_uboot_target,$(UBOOT_BUILDDIR_MC68EZ328),kanpapa_defconfig,mc68ez328,000))
+$(eval $(call create_uboot_target,$(UBOOT_BUILDDIR_MC68EZ328),kanpapa_defconfig,mc68ez328,000,m68k-buildroot-uclinux-uclibc-))
 $(eval $(call create_linux_target,$(LINUX_BUILDDIR_MC68EZ328),mc68ez328_defconfig,mc68ez328,000))
 $(eval $(call create_qemu_target,mc68ez328,MC68EZ328))
 

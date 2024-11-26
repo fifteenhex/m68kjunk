@@ -4,7 +4,7 @@ UBOOT_VIRT=$(UBOOT_BUILDDIR_VIRT)/u-boot.elf
 LINUX_VIRT=bootfiles/vmlinux.virt
 
 $(eval $(call create_uboot_target,$(UBOOT_BUILDDIR_VIRT),qemu_virt_m68k_mc68000_defconfig,virt,000))
-$(eval $(call create_linux_target,$(LINUX_BUILDDIR_VIRT),virt_mc68000_defconfig,virt,000))
+$(eval $(call create_linux_target,$(LINUX_BUILDDIR_VIRT),virt_mc68000_defconfig,virt,000,m68k-buildroot-uclinux-uclibc-))
 
 bootfiles/vmlinux.virt: bootfiles build/linux.virt.build.stamp
 	cp $(LINUX_BUILDDIR_VIRT)/vmlinux $@

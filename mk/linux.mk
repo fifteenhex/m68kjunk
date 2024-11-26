@@ -1,6 +1,5 @@
 # Linux
 
-
 # 1 - builddir
 # 2 - defconfig
 # 3 - stamp

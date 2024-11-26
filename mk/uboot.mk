@@ -2,8 +2,9 @@
 # 2 - defconfig
 # 3 - stamp
 # 4 - buildroot name
+# 5 - toolchain prefix
 
-UBOOT_MAKE=$(MAKE) -C u-boot O=../$1 CROSS_COMPILE=`realpath build/buildroot_$4/host/bin/`/m68k-buildroot-uclinux-uclibc-
+UBOOT_MAKE=$(MAKE) -C u-boot O=../$1 CROSS_COMPILE=`realpath build/buildroot_$4/host/bin/`/$5
 UBOOT_CONFIG=$1/.config
 UBOOT_STAMP_CONFIGURED=build/u-boot.$3.configured.stamp
 UBOOT_STAMP_BUILD=build/u-boot.$3.build.stamp

@@ -3,6 +3,15 @@ LINUX_BUILDDIR_VIRT=build/linux_virt
 UBOOT_VIRT=$(UBOOT_BUILDDIR_VIRT)/u-boot.elf
 LINUX_VIRT=bootfiles/vmlinux.virt
 
+$(eval $(call create_uboot_target,$(UBOOT_BUILDDIR_VIRT),qemu_virt_m68k_mc68000_defconfig,virt,000))
+$(eval $(call create_linux_target,$(LINUX_BUILDDIR_VIRT),virt_mc68000_defconfig,virt,000))
+
+bootfiles/vmlinux.virt: bootfiles build/linux.virt.build.stamp
+	cp $(LINUX_BUILDDIR_VIRT)/vmlinux $@
+	./build/buildroot_000/host/bin/m68k-buildroot-uclinux-uclibc-strip $@
+
+QEMU_DEPS_VIRT=build/u-boot.virt.build.stamp bootfiles/vmlinux.virt
+
 QEMU_CMDLINE_VIRT=$(QEMU_BIN) \
 	-cpu $(QEMU_CPU) \
 	-m 128 \
@@ -11,24 +20,11 @@ QEMU_CMDLINE_VIRT=$(QEMU_BIN) \
 	-nographic \
 	-drive file=fat:./bootfiles/,if=none,id=drive-dummy,readonly=on \
 	-device virtio-blk-device,drive=drive-dummy \
+	-drive format=raw,file=build/buildroot_000/images/rootfs.squashfs,if=none,id=drive-rootfs \
+	-device virtio-blk-device,drive=drive-rootfs \
 	-device virtio-serial-device
 
-#	-drive format=raw,file=buildroot/output/images/rootfs.squashfs,if=none,id=drive-rootfs \
-#	-device virtio-blk-device,drive=drive-rootfs \
-
-
-$(eval $(call create_uboot_target,$(UBOOT_BUILDDIR_VIRT),qemu_virt_m68k_mc68000_defconfig,virt,000))
-$(eval $(call create_linux_target,$(LINUX_BUILDDIR_VIRT),virt_mc68000_defconfig,virt,000))
 $(eval $(call create_qemu_target,virt,VIRT))
-
-bootfiles/vmlinux.virt: bootfiles linux.virt.stamp
-	PATH=$$PATH:$(PWD)/buildroot/output/host/bin/ \
-		$(MAKE) -C linux O=../$(LINUX_BUILDDIR_VIRT) ARCH=m68k CROSS_COMPILE=$(COMPILER) -j12
-	cp $(LINUX_BUILDDIR_VIRT)/vmlinux $@
-	PATH=$$PATH:$(PWD)/buildroot/output/host/bin/ \
-		$(TCPREFIX)-strip $@
-
-
 
 #u-boot/$(UBOOT_BUILDDIR_VIRT)/u-boot.elf: u-boot.virt.build.stamp
 #	PATH=$$PATH:$(PWD)/buildroot/output/host/bin/ \

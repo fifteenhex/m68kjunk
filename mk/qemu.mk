@@ -9,7 +9,7 @@ qemu-deps:
 qemu.stamp:
 	mkdir -p qemu/build && cd qemu/build && ../configure --target-list=m68k-softmmu --enable-sdl --enable-slirp
 	touch $@
-	
+
 PHONY:qemu/build/qemu-system-m68k
 qemu/build/qemu-system-m68k: qemu.stamp
 	cd qemu/build && make
@@ -17,7 +17,7 @@ qemu/build/qemu-system-m68k: qemu.stamp
 # - 1 name
 # - 2 name caps
 define create_qemu_target
-run-qemu-$1: qemu-deps
+run-qemu-$1: $(QEMU_DEPS_$(2))
 	$(QEMU_CMDLINE_$(2))
 
 gdb-qemu-$1: qemu-deps

@@ -27,12 +27,6 @@ include mk/buildroot.mk
 include mk/uboot.mk
 include mk/linux.mk
 
-# mc68ez328
-.PHONY: u-boot/$(UBOOT_BUILDDIR_MC68EZ328)/u-boot.bin
-u-boot/$(UBOOT_BUILDDIR_MC68EZ328)/u-boot.bin: u-boot.mc68ez328.build.stamp
-	PATH=$$PATH:$(PWD)/buildroot/output/host/bin/ \
-		$(MAKE) -C u-boot O=$(UBOOT_BUILDDIR_MC68EZ328) ARCH=m68k CROSS_COMPILE=$(COMPILER) -j12
-
 u-boot.brec: uboot
 	cat init.b > $@
 	echo "\n\n*** uboot ***" >> $@

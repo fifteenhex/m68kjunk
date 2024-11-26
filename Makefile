@@ -27,18 +27,6 @@ include mk/buildroot.mk
 include mk/uboot.mk
 include mk/linux.mk
 
-
-u-boot/$(UBOOT_BUILDDIR_VIRT)/u-boot.elf: u-boot.virt.build.stamp
-	PATH=$$PATH:$(PWD)/buildroot/output/host/bin/ \
-		$(MAKE) -C u-boot O=$(UBOOT_BUILDDIR_VIRT) CROSS_COMPILE=$(COMPILER) -j12
-
-.PHONY:u-boot/$(UBOOT_BUILDDIR_VIRT)/u-boot.elf.fudged
-u-boot/$(UBOOT_BUILDDIR_VIRT)/u-boot.elf.fudged: u-boot/$(UBOOT_BUILDDIR_VIRT)/u-boot.elf
-	PATH=$$PATH:$(PWD)/buildroot/output/host/bin/ \
-		$(TCPREFIX)-objcopy --change-start 0x400 $< $@
-
-UBOOT_VIRT=u-boot/$(UBOOT_BUILDDIR_VIRT)/u-boot.elf.fudged
-
 # mc68ez328
 .PHONY: u-boot/$(UBOOT_BUILDDIR_MC68EZ328)/u-boot.bin
 u-boot/$(UBOOT_BUILDDIR_MC68EZ328)/u-boot.bin: u-boot.mc68ez328.build.stamp

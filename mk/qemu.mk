@@ -2,11 +2,9 @@ QEMU_CMDLINE_COMMON=-nic user,tftp=bootfiles/
 QEMU_BIN=qemu/build/qemu-system-m68k
 QEMU_CPU ?= m68000
 
-qemu-deps: qemu/build/qemu-system-m68k \
-	$(UBOOT_VIRT) \
-	$(DISK) \
-	$(LINUX_VIRT) \
-	buildroot/output/images/rootfs.squashfs
+#qemu/build/qemu-system-m68k
+
+qemu-deps:
 
 qemu.stamp:
 	mkdir -p qemu/build && cd qemu/build && ../configure --target-list=m68k-softmmu --enable-sdl --enable-slirp

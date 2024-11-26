@@ -25,3 +25,15 @@ bootfiles/vmlinux.virt: bootfiles linux.virt.stamp
 		$(TCPREFIX)-strip $@
 
 LINUX_VIRT=bootfiles/vmlinux.virt
+
+
+u-boot/$(UBOOT_BUILDDIR_VIRT)/u-boot.elf: u-boot.virt.build.stamp
+	PATH=$$PATH:$(PWD)/buildroot/output/host/bin/ \
+		$(MAKE) -C u-boot O=$(UBOOT_BUILDDIR_VIRT) CROSS_COMPILE=$(COMPILER) -j12
+
+.PHONY:u-boot/$(UBOOT_BUILDDIR_VIRT)/u-boot.elf.fudged
+u-boot/$(UBOOT_BUILDDIR_VIRT)/u-boot.elf.fudged: u-boot/$(UBOOT_BUILDDIR_VIRT)/u-boot.elf
+	PATH=$$PATH:$(PWD)/buildroot/output/host/bin/ \
+		$(TCPREFIX)-objcopy --change-start 0x400 $< $@
+
+UBOOT_VIRT=u-boot/$(UBOOT_BUILDDIR_VIRT)/u-boot.elf.fudged

@@ -1,5 +1,7 @@
 UBOOT_BUILDDIR_VIRT=build/uboot_virt
 LINUX_BUILDDIR_VIRT=build/linux_virt
+UBOOT_VIRT=$(UBOOT_BUILDDIR_VIRT)/u-boot.elf
+LINUX_VIRT=bootfiles/vmlinux.virt
 
 QEMU_CMDLINE_VIRT=$(QEMU_BIN) \
 	-cpu $(QEMU_CPU) \
@@ -9,9 +11,11 @@ QEMU_CMDLINE_VIRT=$(QEMU_BIN) \
 	-nographic \
 	-drive file=fat:./bootfiles/,if=none,id=drive-dummy,readonly=on \
 	-device virtio-blk-device,drive=drive-dummy \
-	-drive format=raw,file=buildroot/output/images/rootfs.squashfs,if=none,id=drive-rootfs \
-	-device virtio-blk-device,drive=drive-rootfs \
 	-device virtio-serial-device
+
+#	-drive format=raw,file=buildroot/output/images/rootfs.squashfs,if=none,id=drive-rootfs \
+#	-device virtio-blk-device,drive=drive-rootfs \
+
 
 $(eval $(call create_uboot_target,$(UBOOT_BUILDDIR_VIRT),qemu_virt_m68k_mc68000_defconfig,virt,000))
 $(eval $(call create_linux_target,$(LINUX_BUILDDIR_VIRT),virt_mc68000_defconfig,virt,000))
@@ -24,16 +28,13 @@ bootfiles/vmlinux.virt: bootfiles linux.virt.stamp
 	PATH=$$PATH:$(PWD)/buildroot/output/host/bin/ \
 		$(TCPREFIX)-strip $@
 
-LINUX_VIRT=bootfiles/vmlinux.virt
 
 
-u-boot/$(UBOOT_BUILDDIR_VIRT)/u-boot.elf: u-boot.virt.build.stamp
-	PATH=$$PATH:$(PWD)/buildroot/output/host/bin/ \
-		$(MAKE) -C u-boot O=$(UBOOT_BUILDDIR_VIRT) CROSS_COMPILE=$(COMPILER) -j12
+#u-boot/$(UBOOT_BUILDDIR_VIRT)/u-boot.elf: u-boot.virt.build.stamp
+#	PATH=$$PATH:$(PWD)/buildroot/output/host/bin/ \
+#		$(MAKE) -C u-boot O=$(UBOOT_BUILDDIR_VIRT) CROSS_COMPILE=$(COMPILER) -j12
 
-.PHONY:u-boot/$(UBOOT_BUILDDIR_VIRT)/u-boot.elf.fudged
-u-boot/$(UBOOT_BUILDDIR_VIRT)/u-boot.elf.fudged: u-boot/$(UBOOT_BUILDDIR_VIRT)/u-boot.elf
-	PATH=$$PATH:$(PWD)/buildroot/output/host/bin/ \
-		$(TCPREFIX)-objcopy --change-start 0x400 $< $@
-
-UBOOT_VIRT=u-boot/$(UBOOT_BUILDDIR_VIRT)/u-boot.elf.fudged
+#.PHONY:u-boot/$(UBOOT_BUILDDIR_VIRT)/u-boot.elf.fudged
+#u-boot/$(UBOOT_BUILDDIR_VIRT)/u-boot.elf.fudged: u-boot/$(UBOOT_BUILDDIR_VIRT)/u-boot.elf
+#	PATH=$$PATH:$(PWD)/buildroot/output/host/bin/ \
+#		$(TCPREFIX)-objcopy --change-start 0x400 $< $@

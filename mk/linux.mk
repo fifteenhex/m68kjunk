@@ -4,8 +4,9 @@
 # 2 - defconfig
 # 3 - stamp
 # 4 - buildroot name
+# 5 - toolchain prefix
 
-LINUX_MAKE=$(MAKE) -C linux O=../$1 ARCH=m68k CROSS_COMPILE=../buildroot_$4/host/bin/m68k-buildroot-uclinux-uclibc-
+LINUX_MAKE=$(MAKE) -C linux O=../$1 ARCH=m68k CROSS_COMPILE=../buildroot_$4/host/bin/$5
 
 define create_linux_target
 build/linux.$3.configured.stamp:

@@ -39,4 +39,5 @@ mvme147_roms:
 	./romwak/romwak /b u-boot-spl.padded.fill u-boot-spl.even.bin u-boot-spl.odd.bin
 
 $(eval $(call create_uboot_target,$(UBOOT_BUILDDIR_MVME147),mvme147_defconfig,mvme147,030,m68k-buildroot-linux-gnu-))
+$(eval $(call create_linux_target,$(LINUX_BUILDDIR_MVME147),mvme147_defconfig,mvme147,030,m68k-buildroot-linux-gnu-))
 $(eval $(call create_qemu_target,mvme147,MVME147))

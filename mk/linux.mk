@@ -15,12 +15,14 @@ $(eval $(call git_hash,$(LINUX_PREFIX),linux))
 
 define create_linux_target
 $(LINUX_STAMP_CONFIGURED):
+	@echo "CONFIGURE linux"
 	$(LINUX_MAKE) $2
-	touch $$@
+	@touch $$@
 
 $(LINUX_STAMP_BUILD): $(LINUX_STAMP_CONFIGURED) $(LINUX_PREFIX).hash
+	@echo "BUILD linux"
 	$(LINUX_MAKE) -j12
-	touch $$@
+	@touch $$@
 
 linux-all:: $(LINUX_STAMP_BUILD)
 

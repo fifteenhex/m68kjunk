@@ -22,17 +22,20 @@ $(QEMU_STAMP_BUILD): $(QEMU_STAMP_CONFIGURE) $(QEMU_PREFIX).hash
 # - 1 name
 # - 2 name caps
 define create_qemu_target
-run-qemu-$1: $(QEMU_DEPS_$(2))
-	$(QEMU_CMDLINE_$(2))
+run-qemu-$1: $(QEMU_STAMP_BUILD) $(QEMU_DEPS_$(2))
+	@echo QEMU $1
+	@$(QEMU_CMDLINE_$(2))
 
 gdb-qemu-$1: $(QEMU_STAMP_BUILD)
 	gdb --args $(QEMU_CMDLINE_$(2))
 
-run-qemu-$1-gdb: $(QEMU_STAMP_BUILD)
-	$(QEMU_CMDLINE_$(2)) -s
+run-qemu-$1-gdb: $(QEMU_STAMP_BUILD) $(QEMU_DEPS_$(2))
+	@echo "QEMU (GDB)"
+	@$(QEMU_CMDLINE_$(2)) -s
 
 run-qemu-$1-gdb-wait: $(QEMU_STAMP_BUILD)
-	$(QEMU_CMDLINE_$(2)) -s -S
+	@echo "QEMU (GDB,WAIT)"
+	@$(QEMU_CMDLINE_$(2)) -s -S
 
 qemu-trace-$1: $(QEMU_STAMP_BUILD) tcgmmu/build/libtcgmmu.so
 	$(QEMU_CMDLINE_$(2)) -D ./log.txt \

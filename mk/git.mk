@@ -1,9 +1,10 @@
 # 1 - prefix
 # 2 - git repo
 define git_hash
-.PHONY: $1.hash
-$1.hash:
-	HASH="nomnomnom";						\
+
+$1.hash: $1.hash_FORCE
+	@echo HASH $2
+	@ HASH="nomnomnom";						\
 	if [ -e $$@ ]; then						\
 		HASH=`cat $$@ | sha256sum -`;				\
 	fi;								\
@@ -12,4 +13,7 @@ $1.hash:
 	if [ "$$$$GITHASH" != "$$$$HASH" ]; then			\
 		echo $$$$GITSTATE > $$@;				\
 	fi
+
+$1.hash_FORCE: ;
+
 endef

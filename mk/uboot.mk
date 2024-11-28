@@ -14,12 +14,14 @@ $(eval $(call git_hash,$(UBOOT_PREFIX),u-boot))
 
 define create_uboot_target
 $(UBOOT_STAMP_CONFIGURED): $(BUILDROOT_BUILT)
+	@echo "CONFIGURE u-boot"
 	$(UBOOT_MAKE) $2
-	touch $$@
+	@touch $$@
 
 $(UBOOT_STAMP_BUILD): $(UBOOT_STAMP_CONFIGURED) $(UBOOT_PREFIX).hash $(UBOOT_CONFIG) $(BUILDROOT_BUILT)
+	@echo "BUILD u-boot"
 	$(UBOOT_MAKE) -j12
-	touch $$@
+	@touch $$@
 
 u-boot-all:: $(UBOOT_STAMP_BUILD)
 

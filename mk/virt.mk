@@ -10,7 +10,9 @@ bootfiles/vmlinux.virt: bootfiles build/linux.virt.build.stamp
 	cp $(LINUX_BUILDDIR_VIRT)/vmlinux $@
 	./build/buildroot_000/host/bin/m68k-buildroot-uclinux-uclibc-strip $@
 
-QEMU_DEPS_VIRT=build/u-boot.virt.build.stamp bootfiles/vmlinux.virt
+QEMU_DEPS_VIRT=build/u-boot.virt.build.stamp \
+		bootfiles/vmlinux.virt \
+		$(BUILDROOT_000_ROOTFS_SQUASHFS)
 
 QEMU_CMDLINE_VIRT=$(QEMU_BIN) \
 	-cpu $(QEMU_CPU) \
@@ -20,7 +22,7 @@ QEMU_CMDLINE_VIRT=$(QEMU_BIN) \
 	-nographic \
 	-drive file=fat:./bootfiles/,if=none,id=drive-dummy,readonly=on \
 	-device virtio-blk-device,drive=drive-dummy \
-	-drive format=raw,file=build/buildroot_000/images/rootfs.squashfs,if=none,id=drive-rootfs \
+	-drive format=raw,file=$(BUILDROOT_000_ROOTFS_SQUASHFS),if=none,id=drive-rootfs \
 	-device virtio-blk-device,drive=drive-rootfs \
 	-device virtio-serial-device
 

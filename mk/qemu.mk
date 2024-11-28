@@ -1,6 +1,7 @@
 QEMU_CMDLINE_COMMON=-nic user,tftp=bootfiles/
 QEMU_CPU ?= m68000
 QEMU_BUILDDIR=build/qemu
+QEMU_PREFIX=build/qemu
 QEMU_STAMP_CONFIGURE=build/qemu.configure.stamp
 QEMU_STAMP_BUILD=build/qemu.build.stamp
 QEMU_BIN=$(QEMU_BUILDDIR)/qemu-system-m68k
@@ -12,7 +13,9 @@ $(QEMU_STAMP_CONFIGURE): | $(QEMU_BUILDDIR)
 	cd $(QEMU_BUILDDIR) && ../../qemu/configure --target-list=m68k-softmmu --enable-sdl --enable-slirp
 	touch $@
 
-$(QEMU_STAMP_BUILD): $(QEMU_STAMP_CONFIGURE)
+$(eval $(call git_hash,$(QEMU_PREFIX),qemu))
+
+$(QEMU_STAMP_BUILD): $(QEMU_STAMP_CONFIGURE) $(QEMU_PREFIX).hash
 	cd $(QEMU_BUILDDIR) && make
 	touch $@
 

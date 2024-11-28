@@ -1,21 +1,25 @@
 UBOOT_BUILDDIR_MVME147=build/uboot_mvme147
 LINUX_BUILDDIR_MVME147=build/linux_mvme147
-QEMU_CMDLINE_MVME147=qemu/build/qemu-system-m68k \
+UBOOT_SPL_MVME147=build/uboot_mvme147/spl/u-boot-spl.bin
+ROOTFS_030=build/buildroot_030/images/rootfs.squashfs
+QEMU_CMDLINE_MVME147=$(QEMU_BIN) \
 	-M mvme147 \
 	-bios mvme147-147bug.bin \
-	-device loader,file=u-boot/build_mvme147/spl/u-boot-spl.bin,addr=0x400000 \
-	-device loader,file=u-boot/build_mvme147/u-boot.img,addr=0x700000 \
+	-device loader,file=$(UBOOT_SPL_MVME147),addr=0x400000 \
 	-nographic \
 	-serial unix:/tmp/mvme147,server \
-	-drive format=raw,file=buildroot/output/images/rootfs.squashfs,if=none,id=drive-rootfs \
-	-device scsi-hd,drive=drive-rootfs,bus=scsi.0,channel=0,scsi-id=1,lun=5 \
 	$(QEMU_CMDLINE_COMMON)
+
+#	-drive format=raw,file=$(ROOTFS_030),if=none,id=drive-rootfs \
+##	-device scsi-hd,drive=drive-rootfs,bus=scsi.0,channel=0,scsi-id=1,lun=5 \
+# 	-device loader,file=u-boot/build_mvme147/u-boot.img,addr=0x700000 \
+
 
 u-boot/$(UBOOT_BUILDDIR_MVME147)/spl/u-boot-spl.srec: u-boot/$(UBOOT_BUILDDIR_MVME147)/spl/u-boot-spl
 	objcopy -O srec $< $@
 
 mvme147-147bug.bin:
-	wget -o $@ "http://www.bitsavers.org/pdf/motorola/VME/MVME147/firmware/147/147bug2.5-combined.bin"
+	wget -O $@ "http://www.bitsavers.org/pdf/motorola/VME/MVME147/firmware/147/147bug2.5-combined.bin"
 
 .PHONY:
 mvme147_roms:

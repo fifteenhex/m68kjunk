@@ -18,7 +18,7 @@ $(UBOOT_STAMP_BUILD): $(UBOOT_STAMP_CONFIGURED) $(UBOOT_CONFIG) $(BUILDROOT_BUIL
 	$(UBOOT_MAKE) -j12
 	touch $$@
 
-all-u-boot:: $(UBOOT_STAMP_BUILD)
+u-boot-all:: $(UBOOT_STAMP_BUILD)
 
 .PHONY: u-boot-$3-menuconfig
 u-boot-$3-menuconfig:

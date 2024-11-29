@@ -6,7 +6,7 @@ QEMU_STAMP_CONFIGURE=build/qemu.configure.stamp
 QEMU_STAMP_BUILD=build/qemu.build.stamp
 QEMU_BIN=$(QEMU_BUILDDIR)/qemu-system-m68k
 
-$(QEMU_BUILDDIR):
+$(QEMU_BUILDDIR): | build
 	mkdir $@
 
 $(QEMU_STAMP_CONFIGURE): | $(QEMU_BUILDDIR)

@@ -19,6 +19,9 @@ installpkgs:
 		libncurses-dev \
 		gdb-multiarch
 
+build:
+	mkdir $@
+
 # Directory for the "boot files" to go into
 bootfiles:
 	mkdir $@

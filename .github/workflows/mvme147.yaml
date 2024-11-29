@@ -1,0 +1,15 @@
+name: Build all things
+on: [push]
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: true
+      - run: make installpkgs
+      - run: make build/buildroot_030.build.stamp
+      - run: make build/u-boot.mvme147.build.stamp
+      - run: make build/linux.mvme147.build.stamp
+      - run: make build/qemu.build.stamp
+      - run: find build/

@@ -8,5 +8,6 @@ jobs:
         with:
           submodules: true
       - run: make installpkgs
-      - run: make buildroot-all
+#      - run: make buildroot-all
+      - run: make build/qemu.build.stamp
       - run: find build/

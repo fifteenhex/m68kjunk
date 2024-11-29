@@ -21,6 +21,10 @@ u-boot/$(UBOOT_BUILDDIR_MVME147)/spl/u-boot-spl.srec: u-boot/$(UBOOT_BUILDDIR_MV
 mvme147-147bug.bin:
 	wget -O $@ "http://www.bitsavers.org/pdf/motorola/VME/MVME147/firmware/147/147bug2.5-combined.bin"
 
+QEMU_DEPS_MVME147=mvme147-147bug.bin \
+		build/u-boot.mvme147.build.stamp \
+		build/linux.mvme147.build.stamp
+
 .PHONY:
 mvme147_roms:
 	./romwak/romwak /p u-boot/build_mvme147/spl/u-boot-spl.bin u-boot-spl.bin.padded 64 0xff

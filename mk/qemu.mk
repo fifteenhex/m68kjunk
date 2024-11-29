@@ -33,7 +33,8 @@ run-qemu-$1-gdb: $(QEMU_STAMP_BUILD) $(QEMU_DEPS_$(2))
 	@echo "QEMU (GDB)"
 	@$(QEMU_CMDLINE_$(2)) -s
 
-run-qemu-$1-gdb-wait: $(QEMU_STAMP_BUILD)
+run-qemu-$1-gdb-wait: $(QEMU_STAMP_BUILD) $(QEMU_DEPS_$(2))
+	echo $(QEMU_DEPS_$(2))
 	@echo "QEMU (GDB,WAIT)"
 	@$(QEMU_CMDLINE_$(2)) -s -S
 

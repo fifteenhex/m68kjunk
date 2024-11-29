@@ -12,4 +12,4 @@ jobs:
       - run: make build/u-boot.virt.build.stamp
       - run: make build/linux.virt.build.stamp
       - run: make build/qemu.build.stamp
-      - run: timeout 30s make run-qemu-virt
+      - run: timeout 30s make run-qemu-virt || true

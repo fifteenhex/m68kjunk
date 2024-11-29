@@ -13,3 +13,4 @@ jobs:
       - run: make build/linux.mc68ez328.build.stamp
       - run: make build/qemu.build.stamp
       - run: find build/
+      - run: timeout 30s make run-qemu-mc68ec328 || true

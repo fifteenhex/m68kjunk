@@ -38,28 +38,6 @@ u-boot.brec: uboot
 	echo "\n\n*** go! ***" >> $@
 	echo "0000100000" >> $@
 
-# Disk image
-disk.qcow2: bootfiles/vmlinux.virt \
-	bootfiles/vmlinux.mc68ez328 \
-	bootfiles/vmlinux.mc68ez328.lz4
-
-	rm -f %@
-	qemu-img create -f qcow2 $@ 1G
-	sudo modprobe nbd max_part=8
-	sudo qemu-nbd --connect=/dev/nbd0 disk.qcow2
-	sleep 5
-	sudo sfdisk /dev/nbd0 < sfdisk.txt
-	sudo mkfs.vfat /dev/nbd0p1
-	sudo mount /dev/nbd0p1 /mnt
-	sudo cp bootfiles/vmlinux.virt /mnt
-	sudo cp bootfiles/vmlinux.mc68ez328* /mnt
-	sudo umount /mnt
-	sudo dd if=buildroot/output/images/rootfs.squashfs of=/dev/nbd0p2
-	sudo qemu-nbd --disconnect /dev/nbd0
-	sleep 4
-
-DISK=disk.qcow2
-
 #-device loader,file=u-boot/u-boot.bin,addr=0x0,force-raw=on \
 #-device loader,addr=0x100,cpu-num=0 \
 

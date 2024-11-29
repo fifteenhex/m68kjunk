@@ -30,6 +30,7 @@ include mk/git.mk
 include mk/buildroot.mk
 include mk/uboot.mk
 include mk/linux.mk
+include mk/bootfiles.mk
 
 u-boot.brec: uboot
 	cat init.b > $@

@@ -48,4 +48,5 @@ mvme147_roms:
 
 $(eval $(call create_uboot_target,$(UBOOT_BUILDDIR_MVME147),mvme147_defconfig,mvme147,030,m68k-buildroot-linux-gnu-))
 $(eval $(call create_linux_target,$(LINUX_BUILDDIR_MVME147),mvme147_defconfig,mvme147,030,m68k-buildroot-linux-gnu-))
+$(eval $(call bootfiles_kernel,mvme147,$(LINUX_BUILDDIR_MVME147)/vmlinux,build/buildroot_030/host/bin/m68k-buildroot-linux-gnu-strip))
 $(eval $(call create_qemu_target,mvme147,MVME147))

@@ -1,4 +1,4 @@
-name: Build for mvme147
+name: Build for virt
 on: [push]
 jobs:
   build:
@@ -8,8 +8,8 @@ jobs:
         with:
           submodules: true
       - run: make installpkgs
-      - run: make build/buildroot_030.build.stamp
-      - run: make build/u-boot.mvme147.build.stamp
-      - run: make build/linux.mvme147.build.stamp
+      - run: make build/buildroot_000.build.stamp
+      - run: make build/u-boot.virt.build.stamp
+      - run: make build/linux.virt.build.stamp
       - run: make build/qemu.build.stamp
       - run: find build/

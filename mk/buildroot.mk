@@ -8,6 +8,7 @@ BUILDROOT_040_DIR=build/buildroot_040
 BUILDROOT_040_DEFCONFIG=mc68040_defconfig
 BUILDROOT_060_DIR=build/buildroot_060
 BUILDROOT_060_DEFCONFIG=mc68060_defconfig
+BUILDROOT_ARGS=BR2_EXTERNAL=../br2m68k
 
 $(eval $(call git_hash,$(BUILDROOT_PREFIX),buildroot))
 
@@ -15,21 +16,29 @@ $(eval $(call git_hash,$(BUILDROOT_PREFIX),buildroot))
 define create_uboot_target
 build/buildroot_$1.configured.stamp:
 	@echo "CONFIGURE buildroot"
-	$(MAKE) -C buildroot O=../$$(BUILDROOT_$1_DIR) $$(BUILDROOT_$1_DEFCONFIG)
+	$(MAKE) $(BUILDROOT_ARGS) -C buildroot O=../$$(BUILDROOT_$1_DIR) $$(BUILDROOT_$1_DEFCONFIG)
 	@touch $$@
 
-build/buildroot_$1.build.stamp: build/buildroot_$1.configured.stamp $$(BUILDROOT_PREFIX).hash
+build/buildroot_$1.build.stamp: build/buildroot_$1.configured.stamp $$(BUILDROOT_PREFIX).hash $$(BUILDROOT_$1_DIR)/.config
 	@echo "BUILD buildroot"
-	$(MAKE) -C buildroot O=../$$(BUILDROOT_$1_DIR)
+	$(MAKE) $(BUILDROOT_ARGS) -C buildroot O=../$$(BUILDROOT_$1_DIR)
 	@touch $$@
 
 buildroot-$1-menuconfig:
-	$(MAKE) -C buildroot O=../$$(BUILDROOT_$1_DIR) menuconfig
+	$(MAKE) $(BUILDROOT_ARGS) -C buildroot O=../$$(BUILDROOT_$1_DIR) menuconfig
 
 buildroot-$1-savedefconfig:
-	$(MAKE) -C buildroot O=../$$(BUILDROOT_$1_DIR) savedefconfig
+	$(MAKE) $(BUILDROOT_ARGS) -C buildroot O=../$$(BUILDROOT_$1_DIR) savedefconfig
 
-buildroot-all:: build/buildroot_$1.build.stamp
+.PHONY: buildroot-$1-build
+buildroot-$1-build: build/buildroot_$1.build.stamp
+
+.PHONY: buildroot-$1-build-force
+buildroot-$1-build-force:
+	@echo "FORCEBUILD buildroot"
+	$(MAKE) $(BUILDROOT_ARGS) -C buildroot O=../$$(BUILDROOT_$1_DIR)
+
+buildroot-all:: buildroot-$1-build
 endef
 
 $(eval $(call create_uboot_target,000))

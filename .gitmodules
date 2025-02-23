@@ -10,3 +10,6 @@
 [submodule "qemu"]
 	path = qemu
 	url = git@github.com:fifteenhex/qemu.git
+[submodule "br2m68k"]
+	path = br2m68k
+	url = https://github.com/fifteenhex/br2m68k.git

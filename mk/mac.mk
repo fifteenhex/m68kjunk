@@ -9,12 +9,12 @@ $(MAC_PRAM):
 	qemu-img create -f raw $@ 256
 
 MAC_CD_CONF=emile_cd.conf
-#MAC_CD_APPLEDRIVER=/media/slimboy/coding/m68kjunk/EMILE/build-bbtoolchain/second/appledriver
-MAC_CD_APPLEDRIVER=build/buildroot_040/target/boot/emile/appledriver
+MAC_CD_APPLEDRIVER=/media/slimboy/coding/m68kjunk/EMILE/build-bbtoolchain/second/appledriver
+#MAC_CD_APPLEDRIVER=build/buildroot_040/target/boot/emile/appledriver
 MAC_CD_KERNEL=tmpmacstuff/linux/vmlinux.gz
 MAC_CD_RAMDISK=build/buildroot_040/images/rootfs.cpio.lz4
 $(MAC_CD): $(MAC_CD_CONF) $(MAC_CD_APPLEDRIVER) $(MAC_CD_KERNEL) $(MAC_CD_RAMDISK)
-	build/buildroot_040/build/emile-87adeb3aaed2e4241fc3530519fe0334ea091bd8/build/tools/emile-mkisofs-native \
+	build/buildroot_040/build/emile-99233e1da7c7305a9236d8892c211937213c9998/build/tools/emile-mkisofs-native \
 	-e $(MAC_CD_APPLEDRIVER) \
 	-c emile_cd.conf \
 	$@ $(MAC_CD_CONF) $(MAC_CD_KERNEL) $(MAC_CD_RAMDISK)
@@ -37,6 +37,6 @@ QEMU_CMDLINE_MAC=$(QEMU_BIN) \
 	-device scsi-cd,scsi-id=2,drive=cd0 \
 	-drive file=$(MAC_CD),format=raw,media=cdrom,if=none,id=cd0 \
 	-g 800x600x8 \
-	-serial mon:stdio \
-	-s
+	-serial mon:stdio
+
 $(eval $(call create_qemu_target,mac,MAC))

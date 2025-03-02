@@ -2,13 +2,6 @@ UBOOT_BUILDDIR_MC68EZ328=build/uboot_mc68ez328
 LINUX_BUILDDIR_MC68EZ328=build/linux_mc68ez328
 UBOOT_MC68EZ328=$(UBOOT_BUILDDIR_MC68EZ328)/u-boot.bin
 
-bootfiles/vmlinux.mc68ez328: build/linux.mc68ez328.build.stamp | bootfiles
-	cp $(LINUX_BUILDDIR_MC68EZ328)/vmlinux $@
-	build/buildroot_000/host/bin/m68k-buildroot-uclinux-uclibc-strip $@
-
-bootfiles/vmlinux.mc68ez328.lz4: bootfiles/vmlinux.mc68ez328
-	lz4 -f -9 $<
-
 # Disk image
 disk.qcow2: bootfiles/vmlinux.virt \
 	bootfiles/vmlinux.mc68ez328 \

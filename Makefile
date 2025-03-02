@@ -53,6 +53,7 @@ include mk/mvme147.mk
 include mk/e17.mk
 include mk/virt.mk
 include mk/mc68ez328.mk
+include mk/mac.mk
 
 help:
 	@echo "--- QEMU run targets"

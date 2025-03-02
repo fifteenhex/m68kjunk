@@ -55,4 +55,5 @@ QEMU_CMDLINE_MC68EZ328= \
 
 $(eval $(call create_uboot_target,$(UBOOT_BUILDDIR_MC68EZ328),kanpapa_defconfig,mc68ez328,000,m68k-buildroot-uclinux-uclibc-))
 $(eval $(call create_linux_target,$(LINUX_BUILDDIR_MC68EZ328),mc68ez328_defconfig,mc68ez328,000,m68k-buildroot-uclinux-uclibc-))
+$(eval $(call bootfiles_kernel,mc68ez328,$(LINUX_BUILDDIR_MC68EZ328)/vmlinux,build/buildroot_000/host/bin/m68k-buildroot-uclinux-uclibc-strip))
 $(eval $(call create_qemu_target,mc68ez328,MC68EZ328))

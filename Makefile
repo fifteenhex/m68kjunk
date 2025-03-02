@@ -6,6 +6,7 @@ include mk/toolchain.mk
 all: uboot
 
 installpkgs:
+	sudo apt update
 	sudo apt install \
 		meson \
 		libglib2.0-dev \

@@ -15,7 +15,7 @@ MAC_CD_APPLEDRIVER=build/buildroot_040/target/boot/emile/appledriver
 MAC_CD_KERNEL=build/linux_mac/vmlinux.gz
 MAC_CD_RAMDISK=build/buildroot_040/images/rootfs.cpio.lz4
 $(MAC_CD): $(MAC_CD_CONF) $(MAC_CD_APPLEDRIVER) $(MAC_CD_KERNEL) $(MAC_CD_RAMDISK)
-	build/buildroot_040/build/emile-99233e1da7c7305a9236d8892c211937213c9998/build/tools/emile-mkisofs-native \
+	build/buildroot_040/build/emile-*/build/tools/emile-mkisofs-native \
 	-e $(MAC_CD_APPLEDRIVER) \
 	-c emile_cd.conf \
 	$@ $(MAC_CD_CONF) $(MAC_CD_KERNEL) $(MAC_CD_RAMDISK)
@@ -26,8 +26,6 @@ QEMU_DEPS_MAC=linux-mac-build \
 	      $(MAC_ROM) \
 	      $(MAC_PRAM) \
 	      $(MAC_CD)
-
-
 
 # Cribbed from https://wiki.qemu.org/Documentation/Platforms/m68k - Running Mac OS 7.1 up to 8.1
 QEMU_CMDLINE_MAC=$(QEMU_BIN) \

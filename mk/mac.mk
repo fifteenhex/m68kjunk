@@ -9,8 +9,8 @@ $(MAC_PRAM):
 	qemu-img create -f raw $@ 256
 
 MAC_CD_CONF=emile_cd.conf
-MAC_CD_APPLEDRIVER=/media/slimboy/coding/m68kjunk/EMILE/build-bbtoolchain/second/appledriver
-#MAC_CD_APPLEDRIVER=build/buildroot_040/target/boot/emile/appledriver
+#MAC_CD_APPLEDRIVER=/media/slimboy/coding/m68kjunk/EMILE/build-bbtoolchain/second/appledriver
+MAC_CD_APPLEDRIVER=build/buildroot_040/target/boot/emile/appledriver
 MAC_CD_KERNEL=tmpmacstuff/linux/vmlinux.gz
 MAC_CD_RAMDISK=build/buildroot_040/images/rootfs.cpio.lz4
 $(MAC_CD): $(MAC_CD_CONF) $(MAC_CD_APPLEDRIVER) $(MAC_CD_KERNEL) $(MAC_CD_RAMDISK)

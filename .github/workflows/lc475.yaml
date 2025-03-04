@@ -10,3 +10,4 @@ jobs:
       - run: make installpkgs
       - run: make buildroot-040-build
       - run: find build/
+      - run: timeout 120s make run-qemu-mac || true

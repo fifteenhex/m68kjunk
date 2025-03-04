@@ -26,6 +26,9 @@ $(LINUX_STAMP_BUILD): $(LINUX_STAMP_CONFIGURED) $(LINUX_PREFIX).hash
 
 linux-all:: $(LINUX_STAMP_BUILD)
 
+.PHONY: linux-$3-build
+linux-$3-build: $(LINUX_STAMP_BUILD)
+
 linux-$3-menuconfig:
 	$(LINUX_MAKE) menuconfig
 

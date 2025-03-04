@@ -1,3 +1,4 @@
+LINUX_BUILDDIR_MAC=build/linux_mac
 MAC_ROM=machinefiles/mac/quadra.rom
 MAC_PRAM=machinefiles/mac/pram.img
 MAC_CD=bootfiles/maccd.iso
@@ -11,7 +12,7 @@ $(MAC_PRAM):
 MAC_CD_CONF=emile_cd.conf
 #MAC_CD_APPLEDRIVER=/media/slimboy/coding/m68kjunk/EMILE/build-bbtoolchain/second/appledriver
 MAC_CD_APPLEDRIVER=build/buildroot_040/target/boot/emile/appledriver
-MAC_CD_KERNEL=tmpmacstuff/linux/vmlinux.gz
+MAC_CD_KERNEL=build/linux_mac/vmlinux.gz
 MAC_CD_RAMDISK=build/buildroot_040/images/rootfs.cpio.lz4
 $(MAC_CD): $(MAC_CD_CONF) $(MAC_CD_APPLEDRIVER) $(MAC_CD_KERNEL) $(MAC_CD_RAMDISK)
 	build/buildroot_040/build/emile-99233e1da7c7305a9236d8892c211937213c9998/build/tools/emile-mkisofs-native \
@@ -19,7 +20,10 @@ $(MAC_CD): $(MAC_CD_CONF) $(MAC_CD_APPLEDRIVER) $(MAC_CD_KERNEL) $(MAC_CD_RAMDIS
 	-c emile_cd.conf \
 	$@ $(MAC_CD_CONF) $(MAC_CD_KERNEL) $(MAC_CD_RAMDISK)
 
-QEMU_DEPS_MAC=$(MAC_ROM) \
+$(eval $(call create_linux_target,$(LINUX_BUILDDIR_MAC),lc475_defconfig,mac,040,m68k-buildroot-linux-musl-))
+
+QEMU_DEPS_MAC=linux-mac-build \
+	      $(MAC_ROM) \
 	      $(MAC_PRAM) \
 	      $(MAC_CD)
 
@@ -32,7 +36,7 @@ QEMU_CMDLINE_MAC=$(QEMU_BIN) \
         -M q800 \
 	-bios $(MAC_ROM) \
 	-device scsi-hd,scsi-id=1,drive=hd1 \
-	-drive file="/media/slimboy/coding/m68kjunk/build/buildroot_040/images/rootfs.ext2",format=raw,media=disk,if=none,id=hd1 \
+	-drive file="build/buildroot_040/images/rootfs.ext2",format=raw,media=disk,if=none,id=hd1 \
 	-drive file=$(MAC_PRAM),format=raw,if=mtd \
 	-device scsi-cd,scsi-id=2,drive=cd0 \
 	-drive file=$(MAC_CD),format=raw,media=cdrom,if=none,id=cd0 \

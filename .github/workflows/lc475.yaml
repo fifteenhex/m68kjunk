@@ -32,8 +32,9 @@ jobs:
     - name: Buildroot
       run: make buildroot-040-build
 
+    - name: Linux
+      run: make linux-mac-build
+
     - name: QEMU
       run: make build/qemu.build.stamp
 
-    - run: find build/
-    - run: timeout 120s make run-qemu-mac || true

@@ -29,6 +29,11 @@ jobs:
         path: buildroot/dl
         key: ${{ steps.cache-br2dl-restore.outputs.cache-primary-key }}
 
-    - run: make buildroot-040-build
+    - name: Buildroot
+      run: make buildroot-040-build
+
+    - name: QEMU
+      run: make build/qemu.build.stamp
+
     - run: find build/
     - run: timeout 120s make run-qemu-mac || true

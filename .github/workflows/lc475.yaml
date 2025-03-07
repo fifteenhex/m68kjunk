@@ -38,3 +38,6 @@ jobs:
     - name: QEMU
       run: make build/qemu.build.stamp
 
+  test:
+    - name: Boot test
+      run: run: timeout 120s make run-qemu-virt || true

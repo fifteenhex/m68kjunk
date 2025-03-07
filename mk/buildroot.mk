@@ -24,6 +24,9 @@ build/buildroot_$1.build.stamp: build/buildroot_$1.configured.stamp $$(BUILDROOT
 	$(MAKE) $(BUILDROOT_ARGS) -C buildroot O=../$$(BUILDROOT_$1_DIR)
 	@touch $$@
 
+buildroot-$1-source: build/buildroot_$1.configured.stamp
+	$(MAKE) $(BUILDROOT_ARGS) -C buildroot O=../$$(BUILDROOT_$1_DIR) source
+
 buildroot-$1-menuconfig:
 	$(MAKE) $(BUILDROOT_ARGS) -C buildroot O=../$$(BUILDROOT_$1_DIR) menuconfig
 

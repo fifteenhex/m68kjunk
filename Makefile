@@ -18,7 +18,12 @@ installpkgs:
 		lz4 \
 		qemu-utils \
 		libncurses-dev \
-		gdb-multiarch
+		gdb-multiarch \
+		genisoimage
+
+bootstrap:
+	git submodule init
+	git submodule update --init --recursive
 
 build:
 	mkdir $@

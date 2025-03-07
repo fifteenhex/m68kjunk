@@ -3,10 +3,13 @@ MAC_ROM=machinefiles/mac/quadra.rom
 MAC_PRAM=machinefiles/mac/pram.img
 MAC_CD=bootfiles/maccd.iso
 
-$(MAC_ROM):
+machinefiles/mac:
+	mkdir -p $@
+
+$(MAC_ROM): machinefiles/mac
 	wget "https://github.com/sentient06/MacROMan/raw/refs/heads/master/TestImages/1MB%20ROMs/1993-02%20-%20F1ACAD13%20-%20Quadra,%20Centris%20610,650,800.ROM" -O $@
 
-$(MAC_PRAM):
+$(MAC_PRAM): machinefiles/mac
 	qemu-img create -f raw $@ 256
 
 MAC_CD_CONF=emile_cd.conf
@@ -14,7 +17,7 @@ MAC_CD_CONF=emile_cd.conf
 MAC_CD_APPLEDRIVER=build/buildroot_040/target/boot/emile/appledriver
 MAC_CD_KERNEL=build/linux_mac/vmlinux.gz
 MAC_CD_RAMDISK=build/buildroot_040/images/rootfs.cpio.lz4
-$(MAC_CD): $(MAC_CD_CONF) $(MAC_CD_APPLEDRIVER) $(MAC_CD_KERNEL) $(MAC_CD_RAMDISK)
+$(MAC_CD): $(MAC_CD_CONF) $(MAC_CD_APPLEDRIVER) $(MAC_CD_KERNEL) $(MAC_CD_RAMDISK) bootfiles
 	build/buildroot_040/build/emile-*/build/tools/emile-mkisofs-native \
 	-e $(MAC_CD_APPLEDRIVER) \
 	-c emile_cd.conf \

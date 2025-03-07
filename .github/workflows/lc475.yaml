@@ -4,10 +4,28 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-        with:
-          submodules: true
-      - run: make installpkgs
-      - run: make buildroot-040-build
-      - run: find build/
-      - run: timeout 120s make run-qemu-mac || true
+    - name: Restore br2dl
+      id: cache-br2dl-restore
+      uses: actions/cache/restore@v4
+      with:
+        path: buildroot/dl
+        key: ${{ runner.os }}-br2dl
+
+    - name: Checkout
+      uses: actions/checkout@v4
+      with:
+        submodules: true
+
+    - name: Setup env
+      run: make installpkgs
+
+    - run: make buildroot-040-build
+    - run: find build/
+    - run: timeout 120s make run-qemu-mac || true
+
+    - name: Save br2dl
+      id: cache-primes-save
+      uses: actions/cache/save@v4
+      with:
+        path: buildroot/dl
+        key: ${{ steps.cache-br2dl-restore.outputs.cache-primary-key }}

@@ -14,14 +14,17 @@ $(QEMU_STAMP_CONFIGURE): | $(QEMU_BUILDDIR)
 	cd $(QEMU_BUILDDIR) && ../../qemu/configure --target-list=m68k-softmmu --enable-sdl --enable-slirp
 	touch $@
 
-$(QEMU_TARBALL): $(QEMU_STAMP_CONFIGURE)
-	tar czf $@ $(QEMU_BUILDDIR)
-	
 $(eval $(call git_hash,$(QEMU_PREFIX),qemu))
 
 $(QEMU_STAMP_BUILD): $(QEMU_STAMP_CONFIGURE) $(QEMU_PREFIX).hash
 	cd $(QEMU_BUILDDIR) && make
 	touch $@
+
+# For CI
+.PHONY: $(QEMU_TARBALL)
+$(QEMU_TARBALL): $(QEMU_STAMP_BUILD)
+	tar czf $@ $(QEMU_BUILDDIR) $(QEMU_STAMP_BUILD) $(QEMU_STAMP_CONFIGURE)
+#
 
 # - 1 name
 # - 2 name caps

@@ -33,12 +33,11 @@ jobs:
       with:
         name: ${{ inputs.br_tarball_name }}
         path: build/
-    - run: find ./
-    - run: tar xvf ${{ inputs.br_tarball_target }}
+    - run: tar xzf ${{ inputs.br_tarball_target }}
 
     - name: Build
       run: make ${{ inputs.linux_tarball_target }}
-      
+
     - name: Stash
       uses: actions/upload-artifact@v4
       with:

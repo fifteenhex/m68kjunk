@@ -4,7 +4,7 @@ jobs:
   build_buildroot:
     runs-on: ubuntu-latest
     steps:
-    - uses: ./.github/workflows/buildroot.yml
+    - uses: ./.github/workflows/buildroot.yaml
       with:
         br_tarball_target: build/buildroot_040.tar.gz
 

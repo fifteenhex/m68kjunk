@@ -2,6 +2,9 @@ name: Buildroot reusable workflow
 on:
   workflow_call:
     inputs:
+      br_tarball_name:
+        required: true
+        type: string
       br_tarball_target:
         required: true
         type: string
@@ -41,5 +44,5 @@ jobs:
     - name: Stash
       uses: actions/upload-artifact@v4
       with:
-        name: buildroot_tar_gz
+        name: ${{ inputs.br_tarball_name }}
         path: ${{ inputs.br_tarball_target }}

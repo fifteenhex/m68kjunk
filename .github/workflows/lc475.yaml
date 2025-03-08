@@ -1,18 +1,15 @@
 name: Build for LC475
 on: [push]
 jobs:
-  checkout:
+  build_buildroot:
     runs-on: ubuntu-latest
+    needs: checkout
     steps:
     - name: Checkout
       uses: actions/checkout@v4
       with:
         submodules: true
 
-  build_buildroot:
-    runs-on: ubuntu-latest
-    needs: checkout
-    steps:
     - name: Restore br2dl
       id: cache-br2dl-restore
       uses: actions/cache/restore@v4
@@ -33,21 +30,49 @@ jobs:
         path: buildroot/dl
         key: ${{ steps.cache-br2dl-restore.outputs.cache-primary-key }}
 
-    - name: Buildroot
-      run: make buildroot-040-build
+    - name: Build
+      run: make build/buildroot_040.tar.gz
+
+    - name: Stash
+      uses: actions/upload-artifact@v4
+      with:
+        name: buildroot_tar_gz
+        path: build/buildroot_040.tar.gz
 
   build_linux:
     runs-on: ubuntu-latest
     needs: build_buildroot
     steps:
-    - name: Linux
+    - name: Checkout
+      uses: actions/checkout@v4
+      with:
+        submodules: true
+
+    - name: Setup env
+      run: make installpkgs
+
+    - name: Restore environment
+      uses: actions/download-artifact@v4
+        with:
+          name: buildroot_tar_gz
+          path: build/buildroot_040.tar.gz
+
+    - name: Restore buildroot
+      run: tar xvzf build/buildroot_040.tar.gz
+
+    - name: Build
       run: make linux-mac-build
 
   build_qemu:
     runs-on: ubuntu-latest
     needs: build_buildroot
     steps:
-    - name: QEMU
+    - name: Checkout
+      uses: actions/checkout@v4
+      with:
+        submodules: true
+
+    - name: Build
       run: make build/qemu.build.stamp
 
   test:

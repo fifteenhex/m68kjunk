@@ -24,6 +24,10 @@ build/buildroot_$1.build.stamp: build/buildroot_$1.configured.stamp $$(BUILDROOT
 	$(MAKE) $(BUILDROOT_ARGS) -C buildroot O=../$$(BUILDROOT_$1_DIR)
 	@touch $$@
 
+build/buildroot_$1.tar.gz: build/buildroot_$1.build.stamp
+	@echo "TAR buildroot"
+	tar -cvzf $$@ $$(BUILDROOT_$1_DIR)
+
 buildroot-$1-source: build/buildroot_$1.configured.stamp
 	$(MAKE) $(BUILDROOT_ARGS) -C buildroot O=../$$(BUILDROOT_$1_DIR) source
 

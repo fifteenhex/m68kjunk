@@ -1,8 +1,17 @@
 name: Build for LC475
 on: [push]
 jobs:
-  build:
+  checkout:
     runs-on: ubuntu-latest
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v4
+      with:
+        submodules: true
+
+  build_buildroot:
+    runs-on: ubuntu-latest
+    needs: checkout
     steps:
     - name: Restore br2dl
       id: cache-br2dl-restore
@@ -10,11 +19,6 @@ jobs:
       with:
         path: buildroot/dl
         key: ${{ runner.os }}-br2dl
-
-    - name: Checkout
-      uses: actions/checkout@v4
-      with:
-        submodules: true
 
     - name: Setup env
       run: make installpkgs
@@ -32,15 +36,23 @@ jobs:
     - name: Buildroot
       run: make buildroot-040-build
 
+  build_linux:
+    runs-on: ubuntu-latest
+    needs: build_buildroot
+    steps:
     - name: Linux
       run: make linux-mac-build
 
+  build_qemu:
     - name: QEMU
       run: make build/qemu.build.stamp
 
   test:
     runs-on: ubuntu-latest
-    needs: build
+    needs:
+      build_buildroot
+      build_linux
+      build_qemu
     steps:
     - name: Boot test
       run: timeout 120s make run-qemu-virt || true

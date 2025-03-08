@@ -52,10 +52,7 @@ jobs:
 
   test:
     runs-on: ubuntu-latest
-    needs:
-      build_buildroot
-      build_linux
-      build_qemu
+    needs: [build_buildroot, build_linux, build_qemu]
     steps:
     - name: Boot test
       run: timeout 120s make run-qemu-virt || true

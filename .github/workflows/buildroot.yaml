@@ -2,6 +2,9 @@ name: Buildroot reusable workflow
 on:
   workflow_call:
     inputs:
+      br_variant:
+        required: true
+        type: string
       br_tarball_name:
         required: true
         type: string
@@ -27,27 +30,27 @@ jobs:
       uses: actions/cache/restore@v4
       with:
         path: buildroot/dl
-        key: ${{ runner.os }}-br2dl
+        key: br2dl-${{ inputs.br_variant }}
 
     - name: Restore ccache
       id: cache-ccache-restore
       uses: actions/cache/restore@v4
       with:
         path: .ccache
-        key: ${{ runner.os }}-ccache
+        key: ccache-${{ inputs.br_variant }}
 
     - name: Setup env
       run: make installpkgs
 
     - name: Download
-      run: make buildroot-040-source
+      run: make buildroot-${{ inputs.br_variant }}-source
 
     - name: Save br2dl
       id: cache-br2dl-save
       uses: actions/cache/save@v4
       with:
         path: buildroot/dl
-        key: ${{ runner.os }}-${{ github.run_id }}-br2dl
+        key: ${{ steps.cache-br2dl-restore.outputs.cache-primary-key }}-${{ github.run_id }}
         restore-keys: ${{ steps.cache-br2dl-restore.outputs.cache-primary-key }}
 
     - name: Build
@@ -58,7 +61,7 @@ jobs:
       uses: actions/cache/save@v4
       with:
         path: .ccache
-        key: ${{ runner.os }}-${{ github.run_id }}-ccache
+        key: ${{ steps.cache-ccache-restore.outputs.cache-primary-key }}-${{ github.run_id }}
         restore-keys: ${{ steps.cache-ccache-restore.outputs.cache-primary-key }}
 
     - name: Stash

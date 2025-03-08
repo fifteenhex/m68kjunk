@@ -1,0 +1,34 @@
+name: Linux reusable workflow
+on:
+  workflow_call:
+    inputs:
+      br_tarball_target:
+        required: true
+        type: string
+      linux_make_target:
+        required: true
+        type: string
+
+jobs:
+  build_linux:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v4
+      with:
+        submodules: true
+
+    - name: Setup env
+      run: make installpkgs
+
+    - name: Restore environment
+      uses: actions/download-artifact@v4
+      with:
+        name: buildroot_tar_gz
+        path: ${{ inputs.br_tarball_target }}
+
+    - name: Restore buildroot
+      run: tar xvzf ${{ inputs.br_tarball_target }}
+
+    - name: Build
+      run: make ${{ inputs.linux_make_target }}

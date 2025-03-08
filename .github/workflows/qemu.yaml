@@ -1,0 +1,22 @@
+name: QEMU reusable workflow
+on:
+  workflow_call:
+    inputs:
+      br_tarball_target:
+        required: false
+        type: string
+
+jobs:
+  build_buildroot:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v4
+      with:
+        submodules: true
+
+    - name: Setup env
+      run: make installpkgs
+        
+    - name: Build
+      run: make build/qemu.build.stamp

@@ -7,40 +7,16 @@ jobs:
       br_tarball_target: build/buildroot_040.tar.gz
 
   build_linux:
-    runs-on: ubuntu-latest
     needs: build_buildroot
-    steps:
-    - name: Checkout
-      uses: actions/checkout@v4
-      with:
-        submodules: true
-
-    - name: Setup env
-      run: make installpkgs
-
-    - name: Restore environment
-      uses: actions/download-artifact@v4
-      with:
-        name: buildroot_tar_gz
-        path: build/buildroot_040.tar.gz
-
-    - name: Restore buildroot
-      run: tar xvzf build/buildroot_040.tar.gz
-
-    - name: Build
-      run: make linux-mac-build
+    uses: ./.github/workflows/linux.yaml
+    with:
+      br_tarball_target: build/buildroot_040.tar.gz
+      linux_make_target: linux-mac-build
 
   build_qemu:
-    runs-on: ubuntu-latest
-    needs: build_buildroot
-    steps:
-    - name: Checkout
-      uses: actions/checkout@v4
-      with:
-        submodules: true
-
-    - name: Build
-      run: make build/qemu.build.stamp
+    uses: ./.github/workflows/qemu.yaml
+    with:
+      br_tarball_target: build/buildroot_040.tar.gz
 
   test:
     runs-on: ubuntu-latest

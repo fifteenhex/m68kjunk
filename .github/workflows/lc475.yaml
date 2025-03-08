@@ -65,4 +65,17 @@ jobs:
     - run: tar xzf build/qemu.tar.gz
 
     - name: Boot test
-      run: timeout 120s make run-qemu-mac || true
+      run: timeout 120s make run-qemu-mac | tee bootlog.txt || true
+      
+    - name: Save output
+      uses: actions/upload-artifact@v4
+      with:
+        name: bootlog.txt
+        path: bootlog.txt
+      
+  cleanup:
+    needs: test
+    uses: ./.github/workflows/cleanup.yaml
+    with:
+      br_tarball_name: br_tarball
+      qemu_tarball_name: qemu_tarball

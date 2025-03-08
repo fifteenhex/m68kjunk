@@ -19,7 +19,7 @@ jobs:
 
     - name: Setup env
       run: make installpkgs
-        
+
     - name: Build
       run: make ${{ inputs.tarball_target }}
 

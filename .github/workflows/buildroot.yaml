@@ -29,7 +29,7 @@ jobs:
       run: make buildroot-040-source
 
     - name: Save br2dl
-      id: cache-primes-save
+      id: cache-br2dl-save
       uses: actions/cache/save@v4
       with:
         path: buildroot/dl

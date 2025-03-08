@@ -4,6 +4,7 @@ QEMU_BUILDDIR=build/qemu
 QEMU_PREFIX=build/qemu
 QEMU_STAMP_CONFIGURE=build/qemu.configure.stamp
 QEMU_STAMP_BUILD=build/qemu.build.stamp
+QEMU_TARBALL=build/qemu.tar.gz
 QEMU_BIN=$(QEMU_BUILDDIR)/qemu-system-m68k
 
 $(QEMU_BUILDDIR): | build
@@ -13,6 +14,9 @@ $(QEMU_STAMP_CONFIGURE): | $(QEMU_BUILDDIR)
 	cd $(QEMU_BUILDDIR) && ../../qemu/configure --target-list=m68k-softmmu --enable-sdl --enable-slirp
 	touch $@
 
+$(QEMU_TARBALL): $(QEMU_STAMP_CONFIGURE)
+	tar czf $@ $(QEMU_BUILDDIR)
+	
 $(eval $(call git_hash,$(QEMU_PREFIX),qemu))
 
 $(QEMU_STAMP_BUILD): $(QEMU_STAMP_CONFIGURE) $(QEMU_PREFIX).hash

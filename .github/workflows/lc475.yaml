@@ -1,19 +1,25 @@
 name: Build for LC475
 on: [push]
 jobs:
-  build_buildroot:
+  toolchain:
+    uses: ./.github/workflows/buildroot.yaml
+    with:
+      br_tarball_target: buildroot_040_toolchain.tar.gz
+
+  linux:
+    needs: toolchain
+    uses: ./.github/workflows/linux.yaml
+    with:
+      br_tarball_target: build/buildroot_040_toolchain.tar.gz
+      linux_make_target: linux-mac-build
+
+  buildroot:
+    needs: toolchain
     uses: ./.github/workflows/buildroot.yaml
     with:
       br_tarball_target: build/buildroot_040.tar.gz
 
-  build_linux:
-    needs: build_buildroot
-    uses: ./.github/workflows/linux.yaml
-    with:
-      br_tarball_target: build/buildroot_040.tar.gz
-      linux_make_target: linux-mac-build
-
-  build_qemu:
+  qemu:
     uses: ./.github/workflows/qemu.yaml
     with:
       br_tarball_target: build/buildroot_040.tar.gz

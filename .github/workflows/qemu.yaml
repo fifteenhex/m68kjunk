@@ -19,4 +19,10 @@ jobs:
       run: make installpkgs
         
     - name: Build
-      run: make build/qemu.build.stamp
+      run: make build/qemu.tar.gz
+
+    - name: Stash
+      uses: actions/upload-artifact@v4
+      with:
+        name: qemu_tar_gz
+        path: build/qemu.tar.gz

@@ -2,41 +2,9 @@ name: Build for LC475
 on: [push]
 jobs:
   build_buildroot:
-    runs-on: ubuntu-latest
-    steps:
-    - name: Checkout
-      uses: actions/checkout@v4
+    - uses: .github/workflows/buildroot.yml
       with:
-        submodules: true
-
-    - name: Restore br2dl
-      id: cache-br2dl-restore
-      uses: actions/cache/restore@v4
-      with:
-        path: buildroot/dl
-        key: ${{ runner.os }}-br2dl
-
-    - name: Setup env
-      run: make installpkgs
-
-    - name: Download
-      run: make buildroot-040-source
-
-    - name: Save br2dl
-      id: cache-primes-save
-      uses: actions/cache/save@v4
-      with:
-        path: buildroot/dl
-        key: ${{ steps.cache-br2dl-restore.outputs.cache-primary-key }}
-
-    - name: Build
-      run: make build/buildroot_040.tar.gz
-
-    - name: Stash
-      uses: actions/upload-artifact@v4
-      with:
-        name: buildroot_tar_gz
-        path: build/buildroot_040.tar.gz
+        br_tarball_target: build/buildroot_040.tar.gz
 
   build_linux:
     runs-on: ubuntu-latest

@@ -17,20 +17,20 @@ jobs:
         if: always()
         uses: actions/github-script@v7
         with:
-            script: |
+          script: |
             github.rest.actions.deleteArtifact({
-                owner: context.repo.owner,
-                repo: context.repo.repo,
-                artifact_id: ${{ inputs.br_tarball_name }}
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              artifact_id: ${{ inputs.br_tarball_name }}
             })
 
       - name: Cleanup qemu tarball
         if: always()
         uses: actions/github-script@v7
         with:
-            script: |
+          script: |
             github.rest.actions.deleteArtifact({
-                owner: context.repo.owner,
-                repo: context.repo.repo,
-                artifact_id: ${{ inputs.qemu_tarball_name }}
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              artifact_id: ${{ inputs.qemu_tarball_name }}
             })

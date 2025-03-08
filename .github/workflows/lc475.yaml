@@ -53,9 +53,9 @@ jobs:
 
     - name: Restore environment
       uses: actions/download-artifact@v4
-        with:
-          name: buildroot_tar_gz
-          path: build/buildroot_040.tar.gz
+      with:
+        name: buildroot_tar_gz
+        path: build/buildroot_040.tar.gz
 
     - name: Restore buildroot
       run: tar xvzf build/buildroot_040.tar.gz

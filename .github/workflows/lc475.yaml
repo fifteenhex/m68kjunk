@@ -2,14 +2,7 @@ name: Build for LC475
 on: [push]
 jobs:
   build_buildroot:
-    runs-on: ubuntu-latest
-    steps:
-    - name: Checkout
-      uses: actions/checkout@v4
-      with:
-        submodules: true
-    - run: find ./
-    - uses: ./.github/workflows/buildroot.yaml
+    uses: ./.github/workflows/buildroot.yaml
       with:
         br_tarball_target: build/buildroot_040.tar.gz
 

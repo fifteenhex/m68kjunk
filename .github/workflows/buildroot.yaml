@@ -51,7 +51,6 @@ jobs:
       with:
         path: buildroot/dl
         key: ${{ steps.cache-br2dl-restore.outputs.cache-primary-key }}-${{ github.run_id }}
-        restore-keys: ${{ steps.cache-br2dl-restore.outputs.cache-primary-key }}
 
     - name: Build
       run: make ${{ inputs.br_tarball_target }}
@@ -62,7 +61,6 @@ jobs:
       with:
         path: .ccache
         key: ${{ steps.cache-ccache-restore.outputs.cache-primary-key }}-${{ github.run_id }}
-        restore-keys: ${{ steps.cache-ccache-restore.outputs.cache-primary-key }}
 
     - name: Stash
       uses: actions/upload-artifact@v4

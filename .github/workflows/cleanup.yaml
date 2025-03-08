@@ -12,7 +12,7 @@ on:
 jobs:
   cleanup:
     runs-on: ubuntu-latest
-      steps:
+    steps:
       - name: Cleanup buildroot tarball
         if: always()
         uses: actions/github-script@v7

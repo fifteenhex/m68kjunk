@@ -4,7 +4,7 @@ jobs:
   toolchain:
     uses: ./.github/workflows/buildroot.yaml
     with:
-      br_variant: 040
+      br_variant: "040"
       br_tarball_name: br_toolchain_tarball
       br_tarball_target: build/buildroot_040_toolchain.tar.gz
 
@@ -21,7 +21,7 @@ jobs:
     needs: toolchain
     uses: ./.github/workflows/buildroot.yaml
     with:
-      br_variant: 040
+      br_variant: "040"
       br_tarball_name: br_tarball
       br_tarball_target: build/buildroot_040.tar.gz
 

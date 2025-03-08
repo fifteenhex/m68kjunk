@@ -10,8 +10,8 @@ on:
         type: string
 
 env:
-  BR2_CCACHE:y
-  BR2_CCACHE_DIR:${{ github.workspace }}/.ccache
+  BR2_CCACHE: y
+  BR2_CCACHE_DIR: ${{ github.workspace }}/.ccache
 
 jobs:
   build_buildroot:

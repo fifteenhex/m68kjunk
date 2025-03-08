@@ -11,6 +11,12 @@ on:
       linux_make_target:
         required: true
         type: string
+      linux_tarball_name:
+        required: true
+        type: string
+      linux_tarball_target:
+        required: true
+        type: string
 
 jobs:
   build_linux:

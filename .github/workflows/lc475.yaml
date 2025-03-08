@@ -44,6 +44,9 @@ jobs:
       run: make linux-mac-build
 
   build_qemu:
+    runs-on: ubuntu-latest
+    needs: build_buildroot
+    steps:
     - name: QEMU
       run: make build/qemu.build.stamp
 

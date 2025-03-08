@@ -2,6 +2,7 @@ name: Build for LC475
 on: [push]
 jobs:
   build_buildroot:
+    steps:
     - uses: .github/workflows/buildroot.yml
       with:
         br_tarball_target: build/buildroot_040.tar.gz

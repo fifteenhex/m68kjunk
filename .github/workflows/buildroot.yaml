@@ -8,12 +8,6 @@ on:
 
 jobs:
   build_buildroot:
-    steps:
-    - name: Checkout
-      uses: actions/checkout@v4
-      with:
-        submodules: true
-
     - name: Restore br2dl
       id: cache-br2dl-restore
       uses: actions/cache/restore@v4

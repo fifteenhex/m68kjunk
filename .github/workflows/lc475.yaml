@@ -13,7 +13,8 @@ jobs:
     with:
       br_tarball_name: br_toolchain_tarball
       br_tarball_target: build/buildroot_040_toolchain.tar.gz
-      linux_make_target: linux-mac-build
+      linux_tarball_name: linux_mac_tarball
+      linux_tarball_target: build/linux.mac.tar.gz
 
   buildroot:
     needs: toolchain

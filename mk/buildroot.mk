@@ -36,7 +36,7 @@ build/buildroot_$1.toolchain.stamp: build/buildroot_$1.configured.stamp $$(BUILD
 
 build/buildroot_$1_toolchain.tar.gz: build/buildroot_$1.toolchain.stamp
 	@echo "TAR buildroot (toolchain)"
-	tar -cvzf $$@ $$(BUILDROOT_$1_DIR)
+	tar -czf $$@ $$(BUILDROOT_$1_DIR)
 #
 
 buildroot-$1-source: build/buildroot_$1.configured.stamp

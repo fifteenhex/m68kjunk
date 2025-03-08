@@ -8,9 +8,6 @@ on:
       br_tarball_target:
         required: true
         type: string
-      linux_make_target:
-        required: true
-        type: string
       linux_tarball_name:
         required: true
         type: string
@@ -30,14 +27,19 @@ jobs:
     - name: Setup env
       run: make installpkgs
 
-    - name: Restore environment
+    - name: Restore buildroot
       uses: actions/download-artifact@v4
       with:
         name: ${{ inputs.br_tarball_name }}
         path: ${{ inputs.br_tarball_target }}
 
-    - name: Restore buildroot
-      run: tar xvzf ${{ inputs.br_tarball_target }}
+    - run: tar xvzf ${{ inputs.br_tarball_target }}
 
     - name: Build
-      run: make ${{ inputs.linux_make_target }}
+      run: make ${{ inputs.linux_tarball_target }}
+      
+    - name: Stash
+      uses: actions/upload-artifact@v4
+      with:
+        name: ${{ inputs.linux_tarball_name }}
+        path: ${{ inputs.linux_tarball_target }}

@@ -3,8 +3,8 @@ on: [push]
 jobs:
   build_buildroot:
     uses: ./.github/workflows/buildroot.yaml
-      with:
-        br_tarball_target: build/buildroot_040.tar.gz
+    with:
+      br_tarball_target: build/buildroot_040.tar.gz
 
   build_linux:
     runs-on: ubuntu-latest

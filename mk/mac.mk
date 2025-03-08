@@ -42,6 +42,7 @@ QEMU_CMDLINE_MAC=$(QEMU_BIN) \
 	-device scsi-cd,scsi-id=2,drive=cd0 \
 	-drive file=$(MAC_CD),format=raw,media=cdrom,if=none,id=cd0 \
 	-g 800x600x8 \
-	-serial mon:stdio
+	-serial mon:stdio \
+	-audio driver=none
 
 $(eval $(call create_qemu_target,mac,MAC))

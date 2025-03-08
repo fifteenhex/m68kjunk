@@ -7,7 +7,7 @@ on:
         type: string
 
 jobs:
-  build_buildroot:
+  build_qemu:
     runs-on: ubuntu-latest
     steps:
     - name: Checkout

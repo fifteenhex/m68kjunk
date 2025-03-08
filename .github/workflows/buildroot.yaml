@@ -2,7 +2,7 @@ name: Buildroot reusable workflow
 on:
   workflow_call:
     inputs:
-        br_tarball_target:
+      br_tarball_target:
         required: true
         type: string
 

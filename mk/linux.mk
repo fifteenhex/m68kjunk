@@ -24,10 +24,13 @@ $(LINUX_STAMP_BUILD): $(LINUX_STAMP_CONFIGURED) $(LINUX_PREFIX).hash
 	@echo "BUILD linux"
 	$(LINUX_MAKE) -j12
 	@touch $$@
-	
+
 # For CI
 $(LINUX_TARBALL): $(LINUX_STAMP_BUILD)
-	tar czf $$@ $1
+	tar czf $$@ $1 \
+		$(LINUX_STAMP_CONFIGURED) \
+		$(LINUX_STAMP_BUILD) \
+		$(LINUX_PREFIX).hash
 #
 
 linux-all:: $(LINUX_STAMP_BUILD)

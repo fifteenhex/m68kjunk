@@ -38,18 +38,25 @@ jobs:
       with:
         submodules: true
 
+    - name: Restore Linux
+      uses: actions/download-artifact@v4
+      with:
+        name: linux_mac_tarball
+        path: build/
+    - run: tar xzf build/linux.mac.tar.gz
+
     - name: Restore Buildroot
       uses: actions/download-artifact@v4
       with:
         name: br_tarball
-        path: build/buildroot_040.tar.gz
+        path: build/
     - run: tar xzf build/buildroot_040.tar.gz
 
     - name: Restore QEMU
       uses: actions/download-artifact@v4
       with:
         name: qemu_tarball
-        path: build/qemu.tar.gz
+        path: build/
     - run: tar xzf build/qemu.tar.gz
 
     - name: Boot test

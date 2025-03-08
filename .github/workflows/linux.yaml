@@ -34,7 +34,7 @@ jobs:
         name: ${{ inputs.br_tarball_name }}
         path: build/
     - run: find ./
-    - run: tar xvzf ${{ inputs.br_tarball_target }}
+    - run: tar xvf ${{ inputs.br_tarball_target }}
 
     - name: Build
       run: make ${{ inputs.linux_tarball_target }}

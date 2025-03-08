@@ -9,6 +9,10 @@ on:
         required: true
         type: string
 
+env:
+  BR2_CCACHE=y
+  BR2_CCACHE_DIR:${{ github.workspace }}/.ccache
+
 jobs:
   build_buildroot:
     runs-on: ubuntu-latest
@@ -25,6 +29,13 @@ jobs:
         path: buildroot/dl
         key: ${{ runner.os }}-br2dl
 
+    - name: Restore ccache
+      id: cache-ccache-restore
+      uses: actions/cache/restore@v4
+      with:
+        path: .ccache
+        key: ${{ runner.os }}-ccache
+
     - name: Setup env
       run: make installpkgs
 
@@ -40,6 +51,13 @@ jobs:
 
     - name: Build
       run: make ${{ inputs.br_tarball_target }}
+
+    - name: Save ccache
+      id: cache-ccache-save
+      uses: actions/cache/save@v4
+      with:
+        path: .ccache
+        key: ${{ steps.cache-ccache-restore.outputs.cache-primary-key }}
 
     - name: Stash
       uses: actions/upload-artifact@v4

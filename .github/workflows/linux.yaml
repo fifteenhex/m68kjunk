@@ -27,12 +27,13 @@ jobs:
     - name: Setup env
       run: make installpkgs
 
+    - run: mkdir -p build
     - name: Restore buildroot
       uses: actions/download-artifact@v4
       with:
         name: ${{ inputs.br_tarball_name }}
         path: ${{ inputs.br_tarball_target }}
-
+    - run: find ./
     - run: tar xvzf ${{ inputs.br_tarball_target }}
 
     - name: Build

@@ -26,11 +26,13 @@ $(LINUX_STAMP_BUILD): $(LINUX_STAMP_CONFIGURED) $(LINUX_PREFIX).hash
 	@touch $$@
 
 # For CI
+ifdef CI
 $(LINUX_TARBALL): $(LINUX_STAMP_BUILD)
 	tar czf $$@ $1 \
 		$(LINUX_STAMP_CONFIGURED) \
 		$(LINUX_STAMP_BUILD) \
 		$(LINUX_PREFIX).hash
+endif
 #
 
 linux-all:: $(LINUX_STAMP_BUILD)

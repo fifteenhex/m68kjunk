@@ -25,6 +25,7 @@ build/buildroot_$1.build.stamp: build/buildroot_$1.configured.stamp $$(BUILDROOT
 	@touch $$@
 
 # For CI
+ifdef CI
 build/buildroot_$1.toolchain.stamp: build/buildroot_$1.configured.stamp $$(BUILDROOT_PREFIX).hash $$(BUILDROOT_$1_DIR)/.config
 	@echo "BUILD buildroot (toolchain)"
 	$(MAKE) $(BUILDROOT_ARGS) -C buildroot O=../$$(BUILDROOT_$1_DIR) toolchain
@@ -43,6 +44,7 @@ build/buildroot_$1.tar.gz: build/buildroot_$1.build.stamp
 		build/buildroot_$1.configured.stamp \
 		build/buildroot_$1.build.stamp \
 		$$(BUILDROOT_PREFIX).hash
+endif
 #
 
 buildroot-$1-source: build/buildroot_$1.configured.stamp

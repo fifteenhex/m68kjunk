@@ -21,12 +21,14 @@ $(QEMU_STAMP_BUILD): $(QEMU_STAMP_CONFIGURE) $(QEMU_PREFIX).hash
 	touch $@
 
 # For CI
+ifdef CI
 .PHONY: $(QEMU_TARBALL)
 $(QEMU_TARBALL): $(QEMU_STAMP_BUILD)
 	tar czf $@ $(QEMU_BUILDDIR) \
 		$(QEMU_STAMP_BUILD) \
 		$(QEMU_STAMP_CONFIGURE) \
 		$(QEMU_PREFIX).hash
+endif
 #
 
 # - 1 name

@@ -1,0 +1,45 @@
+name: u-boot reusable workflow
+on:
+  workflow_call:
+    inputs:
+      br_tarball_name:
+        required: true
+        type: string
+      br_tarball_target:
+        required: true
+        type: string
+      uboot_tarball_name:
+        required: true
+        type: string
+      uboot_tarball_target:
+        required: true
+        type: string
+
+jobs:
+  build_linux:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v4
+      with:
+        submodules: true
+
+    - name: Setup env
+      run: make installpkgs
+
+    - run: mkdir -p build
+    - name: Restore buildroot
+      uses: actions/download-artifact@v4
+      with:
+        name: ${{ inputs.br_tarball_name }}
+        path: build/
+    - run: tar xzf ${{ inputs.br_tarball_target }}
+
+    - name: Build
+      run: make ${{ inputs.linux_tarball_target }}
+
+    - name: Stash
+      uses: actions/upload-artifact@v4
+      with:
+        name: ${{ inputs.uboot_tarball_name }}
+        path: ${{ inputs.uboot_tarball_target }}

@@ -9,6 +9,7 @@ UBOOT_CONFIG=$1/.config
 UBOOT_PREFIX=build/u-boot
 UBOOT_STAMP_CONFIGURED=build/u-boot.$3.configured.stamp
 UBOOT_STAMP_BUILD=build/u-boot.$3.build.stamp
+UBOOT_TARBALL=build/u-boot.$3.tar.gz
 
 $(eval $(call git_hash,$(UBOOT_PREFIX),u-boot))
 
@@ -22,6 +23,16 @@ $(UBOOT_STAMP_BUILD): $(UBOOT_STAMP_CONFIGURED) $(UBOOT_PREFIX).hash $(UBOOT_CON
 	@echo "BUILD u-boot"
 	$(UBOOT_MAKE) -j12
 	@touch $$@
+
+# For CI
+ifdef CI
+$(UBOOT_TARBALL): $(UBOOT_STAMP_BUILD)
+	tar czf $$@ $1 \
+		$(UBOOT_STAMP_CONFIGURED) \
+		$(UBOOT_PREFIX).hash \
+		$(UBOOT_STAMP_BUILD)
+endif
+#
 
 u-boot-all:: $(UBOOT_STAMP_BUILD)
 

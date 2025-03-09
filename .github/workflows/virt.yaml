@@ -1,15 +1,92 @@
-name: Build for virt
+name: Build for virt-nommu
 on: [push]
 jobs:
-  build:
+  toolchain:
+    uses: ./.github/workflows/buildroot.yaml
+    with:
+      br_variant: "000"
+      br_tarball_name: br_toolchain_tarball
+      br_tarball_target: build/buildroot_000_toolchain.tar.gz
+
+  uboot:
+    needs: toolchain
+    uses: ./.github/workflows/uboot.yaml
+    with:
+      br_tarball_name: br_toolchain_tarball
+      br_tarball_target: build/buildroot_000_toolchain.tar.gz
+      uboot_tarball_name: uboot_virt_tarball
+      uboot_tarball_target: build/u-boot.virt.tar.gz
+
+  linux:
+    needs: toolchain
+    uses: ./.github/workflows/linux.yaml
+    with:
+      br_tarball_name: br_toolchain_tarball
+      br_tarball_target: build/buildroot_000_toolchain.tar.gz
+      linux_tarball_name: linux_mac_tarball
+      linux_tarball_target: build/linux.mac.tar.gz
+
+  buildroot:
+    needs: toolchain
+    uses: ./.github/workflows/buildroot.yaml
+    with:
+      br_variant: "000"
+      br_tarball_name: br_tarball
+      br_tarball_target: build/buildroot_000.tar.gz
+
+  qemu:
+    uses: ./.github/workflows/qemu.yaml
+    with:
+      tarball_name: qemu_tarball
+      tarball_target: build/qemu.tar.gz
+
+  test:
     runs-on: ubuntu-latest
+    needs: [buildroot, linux, qemu]
     steps:
-      - uses: actions/checkout@v4
-        with:
-          submodules: true
-      - run: make installpkgs
-      - run: make build/buildroot_000.build.stamp
-      - run: make build/u-boot.virt.build.stamp
-      - run: make build/linux.virt.build.stamp
-      - run: make build/qemu.build.stamp
-      - run: timeout 30s make run-qemu-virt || true
+    - name: Checkout
+      uses: actions/checkout@v4
+      with:
+        submodules: true
+
+    - name: Setup env
+      run: make installpkgs
+
+    - name: Restore Linux
+      uses: actions/download-artifact@v4
+      with:
+        name: linux_mac_tarball
+        path: build/
+    - run: tar xzf build/linux.virt.tar.gz
+
+    - name: Restore Buildroot
+      uses: actions/download-artifact@v4
+      with:
+        name: br_tarball
+        path: build/
+    - run: tar xzf build/buildroot_000.tar.gz
+
+    - name: Restore QEMU
+      uses: actions/download-artifact@v4
+      with:
+        name: qemu_tarball
+        path: build/
+    - run: tar xzf build/qemu.tar.gz
+
+    - name: Boot test
+      run: timeout 120s make run-qemu-virt | tee bootlog.txt || true
+
+    - name: Save output
+      uses: actions/upload-artifact@v4
+      with:
+        name: bootlog.txt
+        path: bootlog.txt
+
+  cleanup:
+    needs: test
+    uses: ./.github/workflows/cleanup.yaml
+    with:
+      toolchain_tarball_name: br_toolchain_tarball
+      br_tarball_name: br_tarball
+      linux_tarball_name: linux_virt_tarball
+      qemu_tarball_name: qemu_tarball

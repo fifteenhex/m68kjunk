@@ -16,7 +16,7 @@ on:
         type: string
 
 jobs:
-  build_linux:
+  build_uboot:
     runs-on: ubuntu-latest
     steps:
     - name: Checkout

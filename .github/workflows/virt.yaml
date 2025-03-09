@@ -52,10 +52,17 @@ jobs:
     - name: Setup env
       run: make installpkgs
 
+    - name: Restore u-boot
+      uses: actions/download-artifact@v4
+      with:
+        name: ${{ jobs.uboot.with.uboot_tarball_name }}
+        path: build/
+    - run: tar xzf ${{ jobs.uboot.with.uboot_tarball_target }}
+
     - name: Restore Linux
       uses: actions/download-artifact@v4
       with:
-        name: linux_mac_tarball
+        name: linux_virt_tarball
         path: build/
     - run: tar xzf build/linux.virt.tar.gz
 

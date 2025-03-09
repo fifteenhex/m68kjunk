@@ -1,0 +1,80 @@
+name: Clean up reusable workflow
+on:
+  workflow_call:
+    inputs:
+      br_tarball_name:
+        required: true
+        type: string
+      br_tarball_target:
+        required: true
+        type: string
+      uboot_tarball_name:
+        required: true
+        type: string
+      uboot_tarball_target:
+        required: true
+        type: string
+      linux_tarball_name:
+        required: true
+        type: string
+      linux_tarball_target:
+        required: true
+        type: string
+      qemu_tarball_name:
+        required: true
+        type: string
+      qemu_tarball_target:
+        required: true
+        type: string
+      run_target:
+        required: true
+        type: string
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v4
+      with:
+        submodules: true
+
+    - name: Setup env
+      run: make installpkgs
+
+    - name: Restore u-boot
+      uses: actions/download-artifact@v4
+      with:
+        name: ${{ inputs.uboot_tarball_name }}
+        path: build/
+    - run: tar xzf ${{ inputs.uboot_tarball_target }}
+
+    - name: Restore Linux
+      uses: actions/download-artifact@v4
+      with:
+        name: ${{ inputs.linux_tarball_name }}
+        path: build/
+    - run: tar xzf ${{ inputs.linux_tarball_target }}
+
+    - name: Restore Buildroot
+      uses: actions/download-artifact@v4
+      with:
+        name: ${{ inputs.br_tarball_name }}
+        path: build/
+    - run: tar xzf ${{ inputs.br_tarball_target }}
+
+    - name: Restore QEMU
+      uses: actions/download-artifact@v4
+      with:
+        name: ${{ inputs.qemu_tarball_name }}
+        path: build/
+    - run: tar xzf ${{ inputs.qemu_tarball_target }}
+
+    - name: Boot test
+      run: timeout 120s make ${{ inputs.run_target }} | tee bootlog.txt || true
+
+    - name: Save output
+      uses: actions/upload-artifact@v4
+      with:
+        name: bootlog.txt
+        path: bootlog.txt

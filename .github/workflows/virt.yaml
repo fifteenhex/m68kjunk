@@ -23,8 +23,8 @@ jobs:
     with:
       br_tarball_name: br_toolchain_tarball
       br_tarball_target: build/buildroot_000_toolchain.tar.gz
-      linux_tarball_name: linux_mac_tarball
-      linux_tarball_target: build/linux.mac.tar.gz
+      linux_tarball_name: linux_virt_tarball
+      linux_tarball_target: build/linux.virt.tar.gz
 
   buildroot:
     needs: toolchain
@@ -62,9 +62,9 @@ jobs:
     - name: Restore Linux
       uses: actions/download-artifact@v4
       with:
-        name: linux_virt_tarball
+        name: ${{ needs.linux.inputs.linux_tarball_name }}
         path: build/
-    - run: tar xzf build/linux.virt.tar.gz
+    - run: tar xzf ${{ needs.linux.inputs.linux_tarball_target }}
 
     - name: Restore Buildroot
       uses: actions/download-artifact@v4

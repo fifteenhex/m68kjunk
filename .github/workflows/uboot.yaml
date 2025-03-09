@@ -36,7 +36,7 @@ jobs:
     - run: tar xzf ${{ inputs.br_tarball_target }}
 
     - name: Build
-      run: make ${{ inputs.linux_tarball_target }}
+      run: make ${{ inputs.uboot_tarball_target }}
 
     - name: Stash
       uses: actions/upload-artifact@v4

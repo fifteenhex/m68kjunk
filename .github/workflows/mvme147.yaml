@@ -1,15 +1,50 @@
 name: Build for mvme147
 on: [push]
 jobs:
-  build:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          submodules: true
-      - run: make installpkgs
-      - run: make build/buildroot_030.build.stamp
-      - run: make build/u-boot.mvme147.build.stamp
-      - run: make build/linux.mvme147.build.stamp
-      - run: make build/qemu.build.stamp
-      - run: find build/
+  toolchain:
+    uses: ./.github/workflows/buildroot.yaml
+    with:
+      br_variant: "030"
+      br_tarball_name: br_toolchain_tarball
+      br_tarball_target: build/buildroot_030_toolchain.tar.gz
+
+  uboot:
+    needs: toolchain
+    uses: ./.github/workflows/uboot.yaml
+    with:
+      br_tarball_name: br_toolchain_tarball
+      br_tarball_target: build/buildroot_030_toolchain.tar.gz
+      uboot_tarball_name: uboot_mvme147_tarball
+      uboot_tarball_target: build/u-boot.mvme147.tar.gz
+
+  linux:
+    needs: toolchain
+    uses: ./.github/workflows/linux.yaml
+    with:
+      br_tarball_name: br_toolchain_tarball
+      br_tarball_target: build/buildroot_030_toolchain.tar.gz
+      linux_tarball_name: linux_mvme147_tarball
+      linux_tarball_target: build/linux.mvme147.tar.gz
+
+  buildroot:
+    needs: toolchain
+    uses: ./.github/workflows/buildroot.yaml
+    with:
+      br_variant: "030"
+      br_tarball_name: br_tarball
+      br_tarball_target: build/buildroot_030.tar.gz
+
+  qemu:
+    uses: ./.github/workflows/qemu.yaml
+    with:
+      tarball_name: qemu_tarball
+      tarball_target: build/qemu.tar.gz
+
+  cleanup:
+    needs: test
+    uses: ./.github/workflows/cleanup.yaml
+    with:
+      toolchain_tarball_name: br_toolchain_tarball
+      br_tarball_name: br_tarball
+      linux_tarball_name: linux_mvme147_tarball
+      qemu_tarball_name: qemu_tarball

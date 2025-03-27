@@ -1,16 +1,65 @@
 name: Build for mc68ez328
 on: [push]
 jobs:
-  build:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          submodules: true
-      - run: make installpkgs
-      - run: make build/buildroot_000.build.stamp
-      - run: make build/u-boot.mc68ez328.build.stamp
-      - run: make build/linux.mc68ez328.build.stamp
-      - run: make build/qemu.build.stamp
-      - run: find build/
-      - run: timeout 30s make run-qemu-mc68ec328 || true
+  toolchain:
+    uses: ./.github/workflows/buildroot.yaml
+    with:
+      br_variant: "000"
+      br_tarball_name: br_toolchain_tarball
+      br_tarball_target: build/buildroot_000_toolchain.tar.gz
+
+  uboot:
+    needs: toolchain
+    uses: ./.github/workflows/uboot.yaml
+    with:
+      br_tarball_name: br_toolchain_tarball
+      br_tarball_target: build/buildroot_000_toolchain.tar.gz
+      uboot_tarball_name: uboot_mc68ez328_tarball
+      uboot_tarball_target: build/u-boot.mc68ez328.tar.gz
+
+  linux:
+    needs: toolchain
+    uses: ./.github/workflows/linux.yaml
+    with:
+      br_tarball_name: br_toolchain_tarball
+      br_tarball_target: build/buildroot_000_toolchain.tar.gz
+      linux_tarball_name: linux_mc68ez328_tarball
+      linux_tarball_target: build/linux.mc68ez328.tar.gz
+
+  buildroot:
+    needs: toolchain
+    uses: ./.github/workflows/buildroot.yaml
+    with:
+      br_variant: "000"
+      br_tarball_name: br_tarball
+      br_tarball_target: build/buildroot_000.tar.gz
+
+  qemu:
+    uses: ./.github/workflows/qemu.yaml
+    with:
+      tarball_name: qemu_tarball
+      tarball_target: build/qemu.tar.gz
+
+  test:
+    needs: [buildroot, uboot, linux, qemu]
+    uses: ./.github/workflows/test.yaml
+    with:
+      br_tarball_name: br_tarball
+      br_tarball_target: build/buildroot_000.tar.gz
+      uboot_tarball_name: uboot_mc68ez328_tarball
+      uboot_tarball_target: build/u-boot.mc68ez328.tar.gz
+      linux_tarball_name: linux_mc68ez328_tarball
+      linux_tarball_target: build/linux.mc68ez328.tar.gz
+      qemu_tarball_name: qemu_tarball
+      qemu_tarball_target: build/qemu.tar.gz
+      run_target: run-qemu-mc68ez328
+
+  cleanup:
+    needs: test
+    uses: ./.github/workflows/cleanup.yaml
+    with:
+      toolchain_tarball_name: br_toolchain_tarball
+      br_tarball_name: br_tarball
+      linux_tarball_name: linux_mc68ez328_tarball
+      qemu_tarball_name: qemu_tarball
+

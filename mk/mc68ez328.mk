@@ -19,7 +19,7 @@ $(MC68EZ328_DISK): bootfiles/vmlinux.virt \
 	sudo cp bootfiles/vmlinux.virt /mnt
 	sudo cp bootfiles/vmlinux.mc68ez328* /mnt
 	sudo umount /mnt
-	sudo dd if=buildroot/output/images/rootfs.squashfs of=/dev/nbd0p2
+	sudo dd if=$(BUILDROOT_000_ROOTFS_SQUASHFS) of=/dev/nbd0p2
 	sudo qemu-nbd --disconnect /dev/nbd0
 	sleep 4
 

@@ -34,6 +34,13 @@ $(UBOOT_TARBALL): $(UBOOT_STAMP_BUILD)
 endif
 #
 
+u-boot-$3-build: $(UBOOT_STAMP_BUILD)
+
+.PHONY: u-boot-$3-build-force
+u-boot-$3-build-force:
+	@echo "BUILD FORCE u-boot"
+	$(UBOOT_MAKE) -j12
+
 u-boot-all:: $(UBOOT_STAMP_BUILD)
 
 .PHONY: u-boot-$3-menuconfig

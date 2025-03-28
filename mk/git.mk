@@ -17,3 +17,7 @@ $1.hash: $1.hash_FORCE
 $1.hash_FORCE: ;
 
 endef
+
+.PHONY:git-sync
+git-sync:
+	git pull --recurse-submodules

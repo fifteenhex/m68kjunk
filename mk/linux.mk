@@ -21,7 +21,7 @@ $(LINUX_STAMP_CONFIGURED):
 	@touch $$@
 
 $(LINUX_STAMP_BUILD): $(LINUX_STAMP_CONFIGURED) $(LINUX_PREFIX).hash
-	@echo "BUILD linux"
+	@echo "BUILD linux ($3)"
 	$(LINUX_MAKE) -j12
 	@touch $$@
 
@@ -39,6 +39,12 @@ linux-all:: $(LINUX_STAMP_BUILD)
 
 .PHONY: linux-$3-build
 linux-$3-build: $(LINUX_STAMP_BUILD)
+
+.PHONY: linux-$3-build-force
+linux-$3-build-force:
+	@echo "BUILD FORCE linux ($3)"
+	$(LINUX_MAKE) -j12
+	@touch $(LINUX_STAMP_BUILD)
 
 linux-$3-menuconfig:
 	$(LINUX_MAKE) menuconfig

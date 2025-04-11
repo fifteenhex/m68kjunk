@@ -19,12 +19,18 @@ QEMU_CMDLINE_VIRT=$(QEMU_BIN) \
 	-m 128 \
 	-M virt \
 	-kernel $(UBOOT_VIRT) \
-	-nographic \
 	-drive file=fat:./bootfiles/,if=none,id=drive-dummy,readonly=on \
 	-device virtio-blk-device,drive=drive-dummy \
 	-drive format=raw,file=$(BUILDROOT_000_ROOTFS_SQUASHFS),if=none,id=drive-rootfs \
 	-device virtio-blk-device,drive=drive-rootfs \
-	-device virtio-serial-device
+	-device virtio-serial-device \
+	-device virtio-net-device \
+	-serial mon:stdio
+
+#	-vga none -device ramfb
+
+#	-nographic \
+
 
 $(eval $(call create_qemu_target,virt,VIRT))
 

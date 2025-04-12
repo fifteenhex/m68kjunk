@@ -4,12 +4,15 @@
 [submodule "u-boot"]
 	path = u-boot
 	url = https://github.com/fifteenhex/u-boot.git
+	branch = mc68000
 [submodule "linux"]
 	path = linux
 	url = https://github.com/fifteenhex/linux.git
+	branch = m68kdt
 [submodule "qemu"]
 	path = qemu
 	url = git@github.com:fifteenhex/qemu.git
+	branch = m68kdt
 [submodule "br2m68k"]
 	path = br2m68k
 	url = https://github.com/fifteenhex/br2m68k.git

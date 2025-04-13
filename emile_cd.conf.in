@@ -4,7 +4,7 @@ vga default
  
 title Buildroot
 kernel vmlinux.gz
-args root=/dev/sda earlyprintk console=ttyS0
+args root=PARTUUID=${EMILE_PARTID}-01 earlyprintk console=ttyS0
 
 title Buildroot ramdisk
 kernel vmlinux.gz

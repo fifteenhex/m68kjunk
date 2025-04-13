@@ -35,8 +35,9 @@ QEMU_CMDLINE_MC68EZ328= \
 	-bios $(UBOOT_MC68EZ328) \
 	-serial mon:stdio \
 	-drive file=$(MC68EZ328_DISK),id=drive-sdcard,if=none \
-	-device sd-card-spi,spec_version=1,drive=drive-sdcard \
-	-trace "sd*"  -trace file=trace_output.log
+	-device sd-card-spi,spec_version=1,drive=drive-sdcard
+
+#	-trace "sd*"  -trace file=trace_output.log
 #	-nographic
 
 

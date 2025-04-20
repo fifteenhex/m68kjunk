@@ -67,7 +67,7 @@ buildroot-$1-build-force:
 .PHONY: buildroot-$1-clean
 buildroot-$1-clean:
 	@echo "CLEAN buildroot"
-	- rm build/buildroot_$1.build.stamp
+	@- rm build/buildroot_$1.build.stamp
 	$(MAKE) $(BUILDROOT_ARGS) -C buildroot O=../$$(BUILDROOT_$1_DIR) clean
 
 buildroot-all:: buildroot-$1-build

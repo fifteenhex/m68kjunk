@@ -51,4 +51,5 @@ linux-$3-menuconfig:
 
 linux-$3-savedefconfig:
 	$(LINUX_MAKE) savedefconfig
+	mv $1/defconfig linux/arch/m68k/configs/$2
 endef

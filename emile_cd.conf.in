@@ -1,10 +1,14 @@
 timeout 5
 default 0
 vga default
- 
+
+title Buildroot (serial console)
+kernel vmlinux.gz
+args root=PARTUUID=${EMILE_PARTID}-01 earlyprintk console=ttyS0,9600n8
+
 title Buildroot
 kernel vmlinux.gz
-args root=PARTUUID=${EMILE_PARTID}-01 earlyprintk console=ttyS0
+args root=PARTUUID=${EMILE_PARTID}-01 earlyprintk
 
 title Buildroot ramdisk
 kernel vmlinux.gz

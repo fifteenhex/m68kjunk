@@ -23,9 +23,8 @@ $(MAC_PRAM): machinefiles/mac
 
 MAC_CD_CONF=bootfiles/emile_cd.conf
 
-
-$(MAC_CD_CONF):	emile_cd.conf.in bootfiles/disk.mac.raw
-	EMILE_PARTID=`/usr/sbin/blkid -o export bootfiles/disk.mac.raw | grep PTUUID | cut -d "=" -f 2` envsubst < $< > $@
+$(MAC_CD_CONF):	emile_cd.conf.in $(MAC_DISK)
+	EMILE_PARTID=`/usr/sbin/blkid -o export $(MAC_DISK) | grep PTUUID | cut -d "=" -f 2` envsubst < $< > $@
 
 #MAC_CD_APPLEDRIVER=/media/slimboy/coding/m68kjunk/EMILE/build-bbtoolchain/second/appledriver
 MAC_CD_APPLEDRIVER=build/buildroot_040/target/boot/emile/appledriver

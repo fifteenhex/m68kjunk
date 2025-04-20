@@ -6,7 +6,7 @@ MAC_CD=bootfiles/maccd.iso
 MAC_DISK=bootfiles/disk.mac.raw
 
 # Disk image
-$(MAC_DISK): sfdisk.mac.txt build/buildroot_040/images/rootfs.ext2
+$(MAC_DISK): sfdisk.mac.txt build/buildroot_040.build.stamp build/buildroot_040/images/rootfs.ext2
 	rm -f %@
 	qemu-img create -f raw $@ 160M
 	/usr/sbin/sfdisk $@ < sfdisk.mac.txt

@@ -26,15 +26,15 @@ MAC_CD_CONF=bootfiles/emile_cd.conf
 $(MAC_CD_CONF):	emile_cd.conf.in $(MAC_DISK)
 	EMILE_PARTID=`/usr/sbin/blkid -o export $(MAC_DISK) | grep PTUUID | cut -d "=" -f 2` envsubst < $< > $@
 
-#MAC_CD_APPLEDRIVER=/media/slimboy/coding/m68kjunk/EMILE/build-bbtoolchain/second/appledriver
-MAC_CD_APPLEDRIVER=build/buildroot_040/target/boot/emile/appledriver
-MAC_CD_KERNEL=build/linux_mac/vmlinux.gz
+MAC_CD_APPLEDRIVER ?= build/buildroot_040/target/boot/emile/appledriver
+MAC_CD_KERNEL=build/linux_mac/vmlinux
+MAC_CD_KERNELZ=build/linux_mac/vmlinux.gz
 MAC_CD_RAMDISK=build/buildroot_040/images/rootfs.cpio.lz4
 $(MAC_CD): $(MAC_CD_CONF) $(MAC_CD_APPLEDRIVER) $(MAC_CD_KERNEL) $(MAC_CD_RAMDISK) bootfiles
-	build/buildroot_040/build/emile-*/build/tools/emile-mkisofs-native \
+	build/buildroot_040/host/sbin/emile-mkisofs \
 	-e $(MAC_CD_APPLEDRIVER) \
 	-c emile_cd.conf \
-	$@ $(MAC_CD_CONF) $(MAC_CD_KERNEL) $(MAC_CD_RAMDISK)
+	$@ $(MAC_CD_CONF) $(MAC_CD_KERNEL) $(MAC_CD_KERNELZ) $(MAC_CD_RAMDISK)
 
 $(eval $(call create_linux_target,$(LINUX_BUILDDIR_MAC),lc475_defconfig,mac,040,m68k-buildroot-linux-musl-))
 
